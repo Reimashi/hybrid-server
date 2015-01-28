@@ -11,5 +11,5 @@ Este proyecto consistirá en el desarrollo de un sistema híbrido cliente/servid
 Autores
 -------
 
-Adrián González Barbosa
-Aitor González Fernández
+* Adrián González Barbosa
+* Aitor González Fernández
