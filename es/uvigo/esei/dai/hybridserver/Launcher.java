@@ -34,16 +34,27 @@ public class Launcher {
     	this.server = new HybridServer(c);
     }
     
+    /**
+     * Obtiene el puerto HTTP del servidor.
+     * 
+     * @return Número de puerto.
+     */
     public int getPort() {
-    	
+    	return this.server.getConfiguration().getHttpPort();
     }
     
+    /**
+     * Inicia el servidor HybridServer
+     */
     public void start() {
-    	
+    	this.server.start();
     }
     
+    /**
+     * Para el servidor HybridServer
+     */
     public void stop() {
-    	
+    	this.server.stop();
     }
     
     /**
@@ -85,6 +96,7 @@ public class Launcher {
             		Launcher.commandHelp();
             	}
             	else if (command.matches("stop")) {
+            		daemon.stop();
             		break;
             	}
             	else {
@@ -97,6 +109,9 @@ public class Launcher {
         }
     }
     
+    /**
+     * Ejecuta el comando HELP
+     */
     private static void commandHelp() {
     	System.out.println();
     	System.out.println("Commands:");
