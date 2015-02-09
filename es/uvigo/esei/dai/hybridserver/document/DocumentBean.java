@@ -1,7 +1,6 @@
-package es.uvigo.esei.dai.hybridserver;
+package es.uvigo.esei.dai.hybridserver.document;
 
 import java.io.IOException;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,60 +13,29 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
-/**
- * Clase contenedora (bean) de documentos genéricos.
- */
 public class DocumentBean {
 	private final static Logger log = Logger.getLogger(DocumentBean.class.getName());
 	
-	public enum DocumentType {
-		HTML, XML, XSD, XSLT
+	private DocumentBeanInfo info;
+	
+	public DocumentBeanInfo getInfo() {
+		return this.info;
 	}
 	
-	private DocumentType type = null;
-	private UUID id = null;
-	private String content = "";
-	
-	public DocumentBean() {}
-	
-	public DocumentBean(DocumentType type) {
-		this(type, "", UUID.randomUUID());
-	}
-		
-	public DocumentBean(DocumentType type, String content) {
-		this(type, content, UUID.randomUUID());
-	}
-			
-	public DocumentBean(DocumentType type, String content, UUID id) {
-		this.type = type;
-		this.content = content;
-		this.id = id;
+	public void setInfo(DocumentBeanInfo info) {
+		this.info = info;
 	}
 	
-	public DocumentType getType() {
-		return this.type;
-	}
-	
-	public void setType(DocumentType type) {
-		this.type = type;
-	}
-	
-	public UUID getUuid() {
-		return this.id;
-	}
-	
-	public void setUuid(UUID id) {
-		this.id = id;
-	}
+	private String content;
 	
 	public String getContent() {
 		return this.content;
 	}
 	
-	public void setContent(String content) {
-		this.content = content;
+	public void setContent(String c) {
+		this.content = c;
 	}
-	
+
 	/**
 	 * Valida un documento XML a partir de un documento XSD
 	 * @param xml Documento XML
@@ -75,8 +43,8 @@ public class DocumentBean {
 	 * @return Estado de la validación
 	 */
 	public static boolean validateXml (DocumentBean xml, DocumentBean xsd) {
-		if (xml.getType() == DocumentType.XML &&
-				xsd.getType() == DocumentType.XSD) {
+		if (xml.getInfo().getType() == DocumentBeanType.XML &&
+				xsd.getInfo().getType() == DocumentBeanType.XSD) {
 			try {
                 Source xsdsrc = new StreamSource(new java.io.StringReader(xsd.getContent()));
                 Source xmlsrc = new StreamSource(new java.io.StringReader(xml.getContent()));
