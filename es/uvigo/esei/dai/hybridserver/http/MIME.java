@@ -50,4 +50,12 @@ public enum MIME {
 	public String getMime() {
 		return mime;
 	}
+	
+	public boolean equals(MIME m) {
+		return m.getMime().toLowerCase() == this.mime.toLowerCase();
+	}
+	
+	public boolean equals(String str) {
+		return str.toLowerCase() == this.mime.toLowerCase();
+	}
 }

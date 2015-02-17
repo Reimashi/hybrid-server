@@ -19,4 +19,16 @@ package es.uvigo.esei.dai.hybridserver.http;
 
 public enum HTTPRequestMethod {
 	HEAD, GET, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT;
+	
+	public static HTTPRequestMethod fromString(String text) throws IllegalArgumentException {
+        if (text != null) {
+            for (HTTPRequestMethod b : HTTPRequestMethod.values()) {
+                if (text.equalsIgnoreCase(b.toString())) {
+                    return b;
+                }
+            }
+        }
+        
+        throw new IllegalArgumentException();
+    }
 }

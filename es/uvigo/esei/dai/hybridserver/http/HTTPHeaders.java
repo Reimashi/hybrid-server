@@ -18,9 +18,18 @@
 package es.uvigo.esei.dai.hybridserver.http;
 
 public enum HTTPHeaders {
-	CONTENT_LENGTH("Content-Length"),
-	CONTENT_TYPE("Content-Type"),
-	HTTP_1_1("HTTP/1.1");
+    ACCEPT_LANGUAGE("Accept-Language"),
+    ACCEPT_ENCODING("Accept-Encoding"),
+    CONTENT_LENGTH("Content-Length"),
+    CACHE_CONTROL("Cache-Control"),
+    CONTENT_ENCODING("Content-Encoding"),
+    CONTENT_TYPE("Content-Type"),
+    USER_AGENT("User-Agent"),
+    CONNECTION("Connection"),
+    ACCEPT("Accept"),
+    HOST("Host"),
+    DNT("DNT"),                                 // Do not track
+    HTTP_1_1("HTTP/1.1");
 	
 	private String header;
 	
@@ -30,5 +39,21 @@ public enum HTTPHeaders {
 	
 	public String getHeader() {
 		return header;
+	}
+	
+	public static HTTPHeaders fromString(String text) throws IllegalArgumentException {
+        if (text != null) {
+            for (HTTPHeaders b : HTTPHeaders.values()) {
+                if (text.equalsIgnoreCase(b.toString())) {
+                    return b;
+                }
+            }
+        }
+        
+        throw new IllegalArgumentException();
+    }
+	
+	public boolean equals (HTTPHeaders obj) {
+		return obj.toString().toLowerCase() == this.header.toLowerCase();
 	}
 }
