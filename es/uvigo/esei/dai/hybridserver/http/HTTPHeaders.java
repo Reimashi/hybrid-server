@@ -29,7 +29,8 @@ public enum HTTPHeaders {
     ACCEPT("Accept"),
     HOST("Host"),
     DNT("DNT"),                                 // Do not track
-    HTTP_1_1("HTTP/1.1");
+    HTTP_1_1("HTTP/1.1"),
+    SERVER("Server");
 	
 	private String header;
 	
@@ -39,6 +40,10 @@ public enum HTTPHeaders {
 	
 	public String getHeader() {
 		return header;
+	}
+	
+	public boolean equals (HTTPHeaders obj) {
+		return obj.toString().toLowerCase() == this.header.toLowerCase();
 	}
 	
 	public static HTTPHeaders fromString(String text) throws IllegalArgumentException {
@@ -53,7 +58,7 @@ public enum HTTPHeaders {
         throw new IllegalArgumentException();
     }
 	
-	public boolean equals (HTTPHeaders obj) {
-		return obj.toString().toLowerCase() == this.header.toLowerCase();
+	public static boolean isHTTPVersion(String str) {
+		return str.matches("HTTP/[0-2]?\\.[0-9]?");
 	}
 }
