@@ -58,18 +58,21 @@ public class HTTPRequest {
                     this.rp_method = HTTPRequestMethod.fromString(splits[0]);
                 }
                 catch(IllegalArgumentException ex) {
-                    throw new HTTPParseException("Linea " + line + ": Método HTTP incorrecto.");
+                    throw new HTTPParseException("Linea " + line + 
+                    		": Método HTTP incorrecto.");
                 }
 
                 this.rp_path = splits[1];
 
                 this.rp_httpversion = splits[2];
-                if (!this.rp_httpversion.matches("HTTP/[1,2]?\\.[0-9]?")) {
-                    throw new HTTPParseException("No es una petición HTTP.");
+                if (!HTTPHeaders.isHTTPVersion(this.rp_httpversion)) {
+                    throw new HTTPParseException("Linea " + line + 
+                    		": No es una petición HTTP.");
                 }
             }
             else {
-                throw new HTTPParseException("Error en la cabecera. Formato incorrecto.");
+                throw new HTTPParseException("Linea " + line + 
+                		": Error en la cabecera. Formato incorrecto.");
             }
             
             // Parseamos los parametros pasados por url
@@ -100,7 +103,8 @@ public class HTTPRequest {
                         this.rp_headerparameters.put(header.toString(), splits[1].trim());
                     }
                     catch(IllegalArgumentException ex) {
-                        HTTPRequest.log.log(Level.WARNING, "Linea " + line + ": Ignorando cabecera desconocida <{0}>.", httpline);
+                        HTTPRequest.log.log(Level.WARNING, "Linea " + line + 
+                        		": Ignorando cabecera desconocida <{0}>.", httpline);
                     }
                 }
             }
@@ -154,7 +158,8 @@ public class HTTPRequest {
             }
         }
         catch (NullPointerException ex) {
-            throw new HTTPParseException("Error de lectura en la petición HTTP.");
+            throw new HTTPParseException("Linea " + line + 
+            		": Error de lectura en la petición HTTP.");
         }
 	}
 
