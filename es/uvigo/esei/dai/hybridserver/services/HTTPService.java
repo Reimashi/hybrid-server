@@ -6,9 +6,9 @@ public class HTTPService {
 	private final Configuration config;
 	private final DBService database;
 	
-	public HTTPService (Configuration conf) {
+	public HTTPService (Configuration conf, DBService dbs) {
 		this.config = conf;
-		this.database = new DBService(this.config);
+		this.database = dbs;
 	}
 
     /**
