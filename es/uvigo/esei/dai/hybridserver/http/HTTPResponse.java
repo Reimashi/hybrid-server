@@ -20,11 +20,15 @@ public class HTTPResponse {
     private String version;
     private String content;
     private final Map<String, String> parameters = new LinkedHashMap<>();
-    
+
 	public HTTPResponse() {
+		this(HTTPResponseStatus.S500);
+	}
+	
+	public HTTPResponse(HTTPResponseStatus stat) {
 		this.content = "";
 		this.version = "HTML/1.1";
-		this.status = HTTPResponseStatus.S500;
+		this.status = stat;
 	}
 	
 	public HTTPResponseStatus getStatus() {
@@ -40,7 +44,7 @@ public class HTTPResponse {
 	}
 
 	public void setVersion(String version) {
-		if (version.matches("HTTP/[0-9].[0-9]")) {
+		if (HTTPHeaders.isHTTPVersion(version)) {
 			this.version = version.toUpperCase();
 		}
 		else {
