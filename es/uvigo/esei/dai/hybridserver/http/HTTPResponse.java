@@ -27,7 +27,7 @@ public class HTTPResponse {
 	
 	public HTTPResponse(HTTPResponseStatus stat) {
 		this.content = "";
-		this.version = "HTML/1.1";
+		this.version = "HTTP/1.1";
 		this.status = stat;
 	}
 	
@@ -96,15 +96,25 @@ public class HTTPResponse {
 	public void print(Writer writer) throws IOException {
         writer.write(this.getVersion() + " " + 
         		this.getStatus().getCode() + " " + 
-        		this.getStatus().getStatus());
+        		this.getStatus().getStatus() + 
+        		HTTPResponse.EOL);
+        
+        // Si no se dice lo contrario, devolvemos html
+        if (!this.getParameters().containsKey("Content-Type")) {
+        	writer.write("Content-Type: text/html; charset=utf-8" + HTTPResponse.EOL);
+        }
+        
+        // Nos aseguramos de que no intenta keep-alive
+        if (!this.getParameters().containsKey("Connection")) {
+        	writer.write("Connection: close" + HTTPResponse.EOL);
+        }
         
         for (Entry<String, String> element: this.getParameters().entrySet()) {
             writer.write(element.getKey() + ": " + element.getValue() + HTTPResponse.EOL);
         }
         
-        writer.write(HTTPResponse.EOL);
-        
         if (this.getContent().length() > 0) {
+            writer.write(HTTPResponse.EOL);
             writer.write(this.getContent());
         }
         
