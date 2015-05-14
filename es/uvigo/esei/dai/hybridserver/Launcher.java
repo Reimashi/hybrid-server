@@ -91,9 +91,10 @@ public class Launcher {
         
         if (daemon != null) {
             daemon.start();
+        	System.out.print("Server initiated. (http: " + daemon.getPort() + ")\n");
             
-            Scanner sc = new Scanner(System.in);
             String command = "";
+            Scanner sc = new Scanner(System.in);
             
             while (true) {
             	System.out.print("-> ");
@@ -104,6 +105,14 @@ public class Launcher {
             	}
             	else if (command.matches("stop")) {
             		daemon.stop();
+                	System.out.print("Server stopped.\n");
+            		break;
+            	}
+            	else if (command.matches("restart")) {
+            		daemon.stop();
+                	System.out.print("Server stopped.\n");
+            		daemon = null;
+            		Launcher.main(args);
             		break;
             	}
             	else {
@@ -111,11 +120,10 @@ public class Launcher {
             	}
             }
             
-            daemon.stop();
             sc.close();
         }
         else {
-        	System.out.println("jaja");
+            Launcher.log.log(Level.SEVERE, "Unexpected error while server has initiating.", args[0]);
         }
     }
     
@@ -127,6 +135,7 @@ public class Launcher {
     	System.out.println("Commands:");
     	System.out.println();
     	System.out.println("\tstop\tStop and close the server.");
+    	System.out.println("\trestart\tRestart the server.");
     	System.out.println("\thelp\tShow this help.");
     	System.out.println();
     }
