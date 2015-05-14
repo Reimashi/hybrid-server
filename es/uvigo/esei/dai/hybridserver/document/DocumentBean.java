@@ -1,24 +1,17 @@
 package es.uvigo.esei.dai.hybridserver.document;
 
 
-import java.io.IOException;
+import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class DocumentBean {
@@ -72,99 +65,26 @@ public class DocumentBean {
     /**
      * Valida un documento XML a partir de un documento XSD
      * @param xmlPath Ruta al documento XML
-     * @param xsdPath Ruta al documento XSD
-     * @return Datos obtenidos del documento validado
+     * @return DocumentBean con un string conteniendo el documento
      */
-    public static DocumentBean FromFile(String xmlPath, String xsdPath){
+    public static DocumentBean FromFile(String xmlPath){
         DocumentBean configuracion = new DocumentBean();
-        DocumentBean xsdConfiguracion = new DocumentBean();
-        try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(xmlPath);
+        if (configuracion.getInfo().getType() == DocumentBeanType.XML) {
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader(new File(xmlPath)));
+                String line;
+                StringBuilder sb = new StringBuilder();
 
-            doc.getDocumentElement().normalize();
-
-            //XSD
-            if (!validateXml(configuracion,xsdConfiguracion)) {
-                NodeList nList = doc.getElementsByTagName("configuration");
-                Node nNode = nList.item(0);
-                Element eElement = (Element) nNode;
-
-                //ConnectionsConfig
-                nList = doc.getElementsByTagName("connections");
-                nNode = nList.item(0);
-                eElement = (Element) nNode;
-                if (eElement.getElementsByTagName("http").item(0) != null) {
-                    configuracion.setHttpPort(Integer.parseInt(eElement.getElementsByTagName("http").item(0).getTextContent()));
-                } else {
-                    throw new java.lang.Exception();
-                }
-                if (eElement.getElementsByTagName("webservice").item(0) != null) {
-                    configuracion.setWebServiceURL(eElement.getElementsByTagName("webservice").item(0).getTextContent());
-                }
-                if (eElement.getElementsByTagName("numClients").item(0) != null) {
-                    configuracion.setNumClients(Integer.parseInt(eElement.getElementsByTagName("numClients").item(0).getTextContent()));
-                }
-
-                //DBconfig
-                nList = doc.getElementsByTagName("database");
-                nNode = nList.item(0);
-                eElement = (Element) nNode;
-                if (eElement.getElementsByTagName("url").item(0) != null) {
-                    configuracion.setDbUser(eElement.getElementsByTagName("user").item(0).getTextContent());
-                }
-                if (eElement.getElementsByTagName("url").item(0) != null) {
-                    configuracion.setDbPassword(eElement.getElementsByTagName("password").item(0).getTextContent());
-                }
-                if (eElement.getElementsByTagName("url").item(0) != null) {
-                    configuracion.setDbURL(eElement.getElementsByTagName("url").item(0).getTextContent());
-                }
-
-                //P2PServerList
-                ArrayList<ServerConfiguration> servers = new ArrayList<>();
-                nList = doc.getElementsByTagName("server");
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-                    nNode = nList.item(temp);
-                    eElement = (Element) nNode;
-                    String name;
-                    if (eElement.getAttribute("name") != null) {
-                        name = eElement.getAttribute("name");
-                    } else {
-                        throw new java.lang.Exception();
+                if (br != null) {
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line.trim());
                     }
-                    String wsdl;
-                    if (eElement.getAttribute("wsdl") != "") {
-                        wsdl = eElement.getAttribute("wsdl");
-                    } else {
-                        throw new java.lang.Exception();
-                    }
-                    String namespace;
-                    if (eElement.getAttribute("namespace") != "") {
-                        namespace = eElement.getAttribute("namespace");
-                    } else {
-                        throw new java.lang.Exception();
-                    }
-                    String service;
-                    if (eElement.getAttribute("service") != "") {
-                        service = eElement.getAttribute("service");
-                    } else {
-                        throw new java.lang.Exception();
-                    }
-                    String httpAddress;
-                    if (eElement.getAttribute("httpAddress") != "") {
-                        httpAddress = eElement.getAttribute("httpAddress");
-                    } else {
-                        throw new java.lang.Exception();
-                    }
-                    ServerConfiguration server = new ServerConfiguration(name, wsdl, namespace, service, httpAddress);
-                    servers.add(server);
-
+                configuracion.setContent(sb.toString());
                 }
-                configuracion.setServers(servers);
+            } catch (IOException e){
+                log.log(Level.WARNING, "Error while parse an XML document.", e);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return configuracion;
     }
