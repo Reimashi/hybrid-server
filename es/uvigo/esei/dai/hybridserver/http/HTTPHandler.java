@@ -24,28 +24,31 @@ public class HTTPHandler implements Runnable {
     	HTTPRequest req;
     	HTTPResponse res;
 
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-            	PrintWriter out = new PrintWriter(this.clientSocket.getOutputStream(), true))
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream())))
     	{
             // Manejamos la petición
             try {
                 req = new HTTPRequest(in);
-                
+            	System.out.println("Peticion bien: " + req.getResourceChain() + " # "+req.getResourceName());
                 res = this.server.getRouter().handle(req);
             }
             catch (HTTPParseException ex) {
+            	System.out.println("Peticion mal: " + ex.getMessage());
             	res = new HTTPResponse(HTTPResponseStatus.S400);
             }
         	
             // Añadimos información extra a la respuesta
             res.putParameter(HTTPHeaders.SERVER.getHeader(), this.server.getServerName());
             
-            // Escribimos la respuesta
-        	res.print(out);
-        	
-        	// Cerramos la conexión
-        	in.close();
-        	out.close();
+            try (PrintWriter out = new PrintWriter(this.clientSocket.getOutputStream(), true)) {
+                // Escribimos la respuesta
+            	res.print(out);
+            }
+            catch (IOException ex) {
+                HTTPHandler.log.log(Level.SEVERE, "<{0}> Error con la conexi\u00f3n al responder a la petici\u00f3n. {1}", 
+                        new Object[]{this.clientSocket.getInetAddress().getHostAddress(), ex.getMessage()});
+            }
+            
         }
         catch (IOException ex) {
             HTTPHandler.log.log(Level.SEVERE, "<{0}> Error con la conexi\u00f3n. {1}", 
