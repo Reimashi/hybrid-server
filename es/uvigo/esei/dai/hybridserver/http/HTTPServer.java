@@ -1,11 +1,15 @@
 package es.uvigo.esei.dai.hybridserver.http;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import es.uvigo.esei.dai.hybridserver.HybridServer;
 
 public class HTTPServer implements Runnable {
     private static final Logger log = Logger.getLogger(HTTPServer.class.getName());
@@ -58,5 +62,16 @@ public class HTTPServer implements Runnable {
     
     public HTTPRouter getRouter() {
         return this.router;
+    }
+    
+    public static boolean testConnection(InetSocketAddress addr) {
+    	try {
+            Socket exitsock = new Socket();
+            exitsock.connect(addr);
+            exitsock.close();
+            return true;
+        } catch (IOException e) {
+        	return false;
+        }
     }
 }
