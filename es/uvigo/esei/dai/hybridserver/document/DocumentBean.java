@@ -69,6 +69,8 @@ public class DocumentBean {
      */
     public static DocumentBean FromFile(String xmlPath){
         DocumentBean configuracion = new DocumentBean();
+        DocumentBeanInfo configuracionMeta = new DocumentBeanInfo();
+        configuracionMeta.setType(DocumentBeanType.XML);
         if (configuracion.getInfo().getType() == DocumentBeanType.XML) {
             BufferedReader br = null;
             try {
@@ -80,7 +82,9 @@ public class DocumentBean {
                     while ((line = br.readLine()) != null) {
                         sb.append(line.trim());
                     }
-                configuracion.setContent(sb.toString());
+                    configuracion.setContent(sb.toString());
+
+                    configuracion.setInfo(configuracionMeta);
                 }
             } catch (IOException e){
                 log.log(Level.WARNING, "Error while parse an XML document.", e);
