@@ -64,7 +64,7 @@ public class Launcher {
     public static void main(String[] args) {
     	
     	Launcher daemon = null;
-        
+
         if (args.length > 0) {
         	if (args[0].matches("/.*properties/i")) {
         		try (InputStream is = new FileInputStream(args[0])) {
@@ -78,9 +78,16 @@ public class Launcher {
                 }
         	}
         	else if (args[0].matches("/.*xml/i")) {
-        		
+        		// Not implemented yet
+        	}
+        	else {
+                Launcher.log.log(Level.SEVERE, "Invalid config file format.");
         	}
         }
+    	else {
+    		// With default configuration
+    		daemon = new Launcher();
+    	}
         
         if (daemon != null) {
             daemon.start();
@@ -106,6 +113,9 @@ public class Launcher {
             
             daemon.stop();
             sc.close();
+        }
+        else {
+        	System.out.println("jaja");
         }
     }
     
