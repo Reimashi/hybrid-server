@@ -37,6 +37,7 @@ public class HTTPRequest {
     
     private final HTTPRequestMethod rp_method;
     private final String rp_path;
+    private final String rp_resource_path;
     private final String rp_httpversion;
     
     private final Map<String, String> rp_headerparameters = new LinkedHashMap<>();
@@ -77,6 +78,7 @@ public class HTTPRequest {
             
             // Parseamos los parametros pasados por url
             if (this.rp_path.contains("?")) {
+            	this.rp_resource_path = this.rp_path.substring(0, this.rp_path.indexOf("?"));
                 String url = this.rp_path.substring(this.rp_path.indexOf("?"));
                 
                 if (url.length() > 0) {
@@ -92,6 +94,9 @@ public class HTTPRequest {
                 		}
                 	}
                 }
+            }
+            else {
+            	this.rp_resource_path = this.rp_path;
             }
             
             // Parseamos las tags de la cabecera
@@ -168,15 +173,25 @@ public class HTTPRequest {
 	}
 
 	public String getResourceChain() {
-		return "";
+		return this.rp_resource_path;
 	}
 	
 	public String[] getResourcePath() {
-		return null;
+		return null; // No lo usa en los test... pa que vale?
 	}
 	
 	public String getResourceName() {
-		return "";
+		if (this.rp_resource_path.contains("/")) {
+			if (this.rp_resource_path.lastIndexOf("/") == this.rp_resource_path.length()) {
+				return "";
+			}
+			else {
+				return this.rp_resource_path.substring(this.rp_resource_path.lastIndexOf("/") + 1);
+			}
+		}
+		else {
+			return this.rp_resource_path;
+		}
 	}
 	
 	public Map<String, String> getResourceParameters() {
