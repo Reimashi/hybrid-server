@@ -51,7 +51,7 @@ public class DocumentBean {
 	 * @return Estado de la validación
 	 */
 	public static boolean validateXml (DocumentBean xml, DocumentBean xsd) {
-		if (xml.getInfo().getType() == DocumentBeanType.XML) {
+		if (xml.getInfo().getType() == DocumentBeanType.XML && xsd.getInfo().getType() == DocumentBeanType.XSD) {
             try {
                 Source xsdsrc = new StreamSource(new java.io.StringReader(xsd.getContent()));
                 Source xmlsrc = new StreamSource(new java.io.StringReader(xml.getContent()));
