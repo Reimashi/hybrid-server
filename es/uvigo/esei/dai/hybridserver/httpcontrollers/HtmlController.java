@@ -14,15 +14,16 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequestHandler;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
+import es.uvigo.esei.dai.hybridserver.jws.HybridServerJwsClient;
 import es.uvigo.esei.dai.hybridserver.services.DBService;
 
 public class HtmlController extends HTTPRequestHandler {
     private static final Logger log = Logger.getLogger(HtmlController.class.getName());
     
 	private final static String jQuery_url = "<script src=\"https://code.jquery.com/jquery-2.1.4.min.js\"></script>";
-    
-	public HtmlController(DBService db) {
-		super(db);
+
+	public HtmlController(DBService db, HybridServerJwsClient jwsclient) {
+		super(db, jwsclient);
 	}
 	
 	@Override
@@ -41,6 +42,7 @@ public class HtmlController extends HTTPRequestHandler {
 			// Obtenemos la lista de documentos
 			DocumentDAO dao = new DocumentDAO(this.db);
 			List<DocumentBeanInfo> documents = dao.getList(DocumentBeanType.HTML);
+			List<DocumentBeanInfo> remoteDocuments = dao.getList(DocumentBeanType.HTML);
 			
 			StringBuilder html = new StringBuilder();
 
@@ -64,7 +66,6 @@ public class HtmlController extends HTTPRequestHandler {
 					+ "</p>");
 
 			html.append("<p><h2>Documentos HTML (Servidor local)</h2></p>");
-			
 			if (documents.size() > 0) {
 				html.append("<p><ul>");
 				
@@ -76,6 +77,17 @@ public class HtmlController extends HTTPRequestHandler {
 			}
 			else {
 				html.append("<p>No hay ningún documento en el repositorio</p>");
+			}
+			
+			if (remoteDocuments.size() > 0) {
+				html.append("<p><h2>Documentos HTML (Servidores remotos)</h2></p>");
+				html.append("<p><ul>");
+				
+				for (DocumentBeanInfo doc : remoteDocuments) {
+					html.append("<li><a href=\"/html?uuid=" + doc.getID().toString() + "\">" + doc.getID().toString() + "</a> - " + deleteButton(doc.getID()) + "</li>");
+				}
+				
+				html.append("</ul></p>");
 			}
 
 			html.append("</body>");
@@ -103,7 +115,16 @@ public class HtmlController extends HTTPRequestHandler {
 				return res;
 			}
 			else {
-				return new HTTPResponse(HTTPResponseStatus.S404);
+				DocumentBean docr = this.jwsclient.get(DocumentBeanType.HTML, id);
+				
+				if (docr != null) {
+					HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
+					res.setContent(docr.getContent());
+					return res;
+				}
+				else {
+					return new HTTPResponse(HTTPResponseStatus.S404);
+				}
 			}
 		} catch (SQLException e) {
 			log.log(Level.WARNING, "Error manejando una peticion. {0}", e.getMessage());
@@ -162,6 +183,8 @@ public class HtmlController extends HTTPRequestHandler {
 			
 			try {
 				dao.delete(DocumentBeanType.HTML, id);
+				this.jwsclient.delete(DocumentBeanType.HTML, id);
+				
 				return new HTTPResponse(HTTPResponseStatus.S200);
 			} catch (SQLException e) {
 				return new HTTPResponse(HTTPResponseStatus.S500);

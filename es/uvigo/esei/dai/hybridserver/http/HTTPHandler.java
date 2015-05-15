@@ -34,7 +34,7 @@ public class HTTPHandler implements Runnable {
             	res = this.server.getRouter().handle(req);
             }
             catch (HTTPParseException ex) {
-            	log.log(Level.INFO, "Bad request from " + this.clientSocket.getInetAddress().toString());
+            	log.log(Level.INFO, "Bad request from " + this.clientSocket.getInetAddress().toString() + ".\n{0}", ex.getMessage());
             	res = new HTTPResponse(HTTPResponseStatus.S400);
             }
         	

@@ -16,9 +16,6 @@ public interface IDocumentJwsService {
 	public DocumentBean get(DocumentBeanType type, UUID id);
 
     @WebMethod
-    public boolean add(DocumentBeanType type, DocumentBean document);
-
-    @WebMethod
     public boolean delete(DocumentBeanType type, UUID id);
 
     @WebMethod

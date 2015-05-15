@@ -1,20 +1,21 @@
 package es.uvigo.esei.dai.hybridserver.services;
 
 import java.net.InetSocketAddress;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import es.uvigo.esei.dai.hybridserver.Configuration;
-import es.uvigo.esei.dai.hybridserver.HybridServer;
 import es.uvigo.esei.dai.hybridserver.http.HTTPServer;
 import es.uvigo.esei.dai.hybridserver.httpcontrollers.*;
+import es.uvigo.esei.dai.hybridserver.jws.HybridServerJwsClient;
 
 public class HTTPService {
     private static final Logger log = Logger.getLogger(HTTPService.class.getName());
     
 	private final Configuration config;
 	private final DBService database;
+	
+	private final HybridServerJwsClient jwsclient;
 
 	private HTTPServer httpserver;
     private Thread httpserver_th;
@@ -25,16 +26,18 @@ public class HTTPService {
 		this.config = conf;
 		this.database = dbs;
 		
+		this.jwsclient = new HybridServerJwsClient(conf);
+		
 		this.httpserver = new HTTPServer(conf.getHttpPort(), conf.getNumClients());
         this.httpserver.setServerName("HybridServer/0.2");
 
         // Establecemos las rutas (regexp) con su controlador asociado.
-        this.httpserver.getRouter().addRoute("^/$", new IndexController(this.database));
-        this.httpserver.getRouter().addRoute("^/welcome$", new IndexController(this.database));
-        this.httpserver.getRouter().addRoute("^/html.*", new HtmlController(this.database));
-        this.httpserver.getRouter().addRoute("^/xml.*", new XmlController(this.database));
-        this.httpserver.getRouter().addRoute("^/xsd.*", new XsdController(this.database));
-        this.httpserver.getRouter().addRoute("^/xslt.*", new XsltController(this.database));
+        this.httpserver.getRouter().addRoute("^/$", new IndexController(this.database, this.jwsclient));
+        this.httpserver.getRouter().addRoute("^/welcome$", new IndexController(this.database, this.jwsclient));
+        this.httpserver.getRouter().addRoute("^/html.*", new HtmlController(this.database, this.jwsclient));
+        this.httpserver.getRouter().addRoute("^/xml.*", new XmlController(this.database, this.jwsclient));
+        this.httpserver.getRouter().addRoute("^/xsd.*", new XsdController(this.database, this.jwsclient));
+        this.httpserver.getRouter().addRoute("^/xslt.*", new XsltController(this.database, this.jwsclient));
 	}
 
     /**

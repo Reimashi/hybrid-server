@@ -1,15 +1,18 @@
 package es.uvigo.esei.dai.hybridserver.http;
 
+import es.uvigo.esei.dai.hybridserver.jws.HybridServerJwsClient;
 import es.uvigo.esei.dai.hybridserver.services.DBService;
 
 public abstract class HTTPRequestHandler {
 	protected DBService db;
+	protected HybridServerJwsClient jwsclient;
 	
 	@SuppressWarnings("unused")
 	private HTTPRequestHandler() {}
 	
-	public HTTPRequestHandler(DBService db) {
+	public HTTPRequestHandler(DBService db, HybridServerJwsClient jws) {
 		this.db = db;
+		this.jwsclient = jws;
 	}
 	
 	public HTTPResponse head(HTTPRequest req) {

@@ -4,11 +4,12 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequestHandler;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
+import es.uvigo.esei.dai.hybridserver.jws.HybridServerJwsClient;
 import es.uvigo.esei.dai.hybridserver.services.DBService;
 
 public class IndexController extends HTTPRequestHandler {
-	public IndexController(DBService db) {
-		super(db);
+	public IndexController(DBService db, HybridServerJwsClient jwsclient) {
+		super(db, jwsclient);
 	}
 
 	@Override

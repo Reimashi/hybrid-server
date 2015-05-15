@@ -33,8 +33,8 @@ public class HybridServer {
 	public void start() {
 		try {
 			this.dbServer.start();
+			this.jwsServer.start();
 			this.htmlServer.start();
-			//this.jwsServer.start();
 			this.started = true;
 		}
 		catch (SQLException e) {
@@ -48,8 +48,8 @@ public class HybridServer {
 	public void stop() {
 		try {
 			this.dbServer.stop();
+			this.jwsServer.stop();
 			this.htmlServer.stop();
-			///this.jwsServer.stop();
 			this.started = false;
 		}
 		catch (SQLException e) {
