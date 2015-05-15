@@ -4,8 +4,13 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequestHandler;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
+import es.uvigo.esei.dai.hybridserver.services.DBService;
 
 public class IndexController extends HTTPRequestHandler {
+	public IndexController(DBService db) {
+		super(db);
+	}
+
 	@Override
 	public HTTPResponse get(HTTPRequest req) {
 		HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
