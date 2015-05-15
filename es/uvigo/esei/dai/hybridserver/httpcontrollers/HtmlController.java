@@ -50,8 +50,9 @@ public class HtmlController extends HTTPRequestHandler {
 					+ jQuery_url
 					+ "<title>Hybrid Server - HTML</title>"
 					+ "</head>");
-			
+
 			html.append("<body><p><h1>Hybrid Server</h1></p>");
+			html.append("<body><p><a href=\"/\">Inicio</a></p>");
 
 			html.append("<p><h2>Nuevo documento HTML</h2></p>");
 			html.append("<p>"
