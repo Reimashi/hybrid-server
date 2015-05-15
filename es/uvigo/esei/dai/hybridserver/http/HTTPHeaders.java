@@ -29,6 +29,7 @@ public enum HTTPHeaders {
     CONNECTION("Connection"),
     ACCEPT("Accept"),
     HOST("Host"),
+    PRAGMA("Pragma"),
     DNT("DNT"),                                 // Do not track
     HTTP_1_1("HTTP/1.1"),
     SERVER("Server");
