@@ -31,8 +31,6 @@ public class HTTPServer implements Runnable {
         ExecutorService ex = Executors.newFixedThreadPool(this.maxclients);
         
         try (ServerSocket serverSocket = new ServerSocket(this.serverPort)) {
-            HTTPServer.log.log(Level.INFO, "Servidor HTTP iniciado. <http://localhost:" + this.serverPort + ">");
-            
             while (!Thread.currentThread().isInterrupted()) {
                 
                 try {
