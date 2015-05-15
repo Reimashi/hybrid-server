@@ -20,32 +20,51 @@ public class HTTPServer implements Runnable {
     protected final int maxclients;
     protected final HTTPRouter router;
     
+    private ServerSocket serverSocket;
+    
     public HTTPServer (int port, int maxclients) {
         this.serverPort = port;
         this.maxclients = maxclients;
         this.router = new HTTPRouter();
     }
     
+    public boolean open() {
+    	try {
+    		this.serverSocket = new ServerSocket(this.serverPort);
+            log.log(Level.INFO, "Servidor HTTP iniciado. <http://localhost:" + this.serverPort + ">");
+            return true;
+    	}
+        catch (IOException e){
+            log.log(Level.SEVERE, "Error al iniciar el servidor HTTP. El puerto " + this.serverPort + " ya se encuentra en uso.");
+        	return false;
+        }
+    }
+    
     @Override
     public void run() {
         ExecutorService ex = Executors.newFixedThreadPool(this.maxclients);
         
-        try (ServerSocket serverSocket = new ServerSocket(this.serverPort)) {
-            while (!Thread.currentThread().isInterrupted()) {
-                
-                try {
-                    ex.execute(new HTTPHandler(serverSocket.accept(), this));
-                } 
-                catch (IOException e) {
-                    log.log(Level.SEVERE, "Error al aceptar una conexión de un cliente.", e);
-                }
-            }
+        while (!Thread.currentThread().isInterrupted()) {
             
-            ex.shutdown();
+            try {
+                ex.execute(new HTTPHandler(serverSocket.accept(), this));
+            } 
+            catch (IOException e) {
+                log.log(Level.SEVERE, "Error al aceptar una conexión de un cliente.", e);
+            }
         }
-        catch (IOException e) {
-            log.severe("No se puede abrir el puerto " + this.serverPort + ". Quizás ya está en uso. ");
-        }
+        
+        ex.shutdown();
+    }
+    
+    public void close() {
+    	if (this.serverSocket != null) {
+    		try {
+    	    	this.serverSocket.close();
+    	    	this.serverSocket = null;
+    		}
+    		catch(IOException e) {}
+    	}
     }
     
     public String getServerName() {
