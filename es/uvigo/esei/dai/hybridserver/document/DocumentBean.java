@@ -14,7 +14,8 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
-public class DocumentBean {
+public class DocumentBean implements Serializable {
+	private static final long serialVersionUID = 4729980263308146090L;
 	private final static Logger log = Logger.getLogger(DocumentBean.class.getName());
 	
 	private DocumentBeanInfo info;

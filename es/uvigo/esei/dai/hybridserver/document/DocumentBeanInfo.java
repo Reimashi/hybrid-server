@@ -1,8 +1,11 @@
 package es.uvigo.esei.dai.hybridserver.document;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class DocumentBeanInfo {
+public class DocumentBeanInfo implements Serializable {
+	private static final long serialVersionUID = -5225478590252872738L;
+	
 	private DocumentBeanType type;
 	
 	public DocumentBeanType getType() {
