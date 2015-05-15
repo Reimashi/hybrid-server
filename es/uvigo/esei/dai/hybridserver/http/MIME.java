@@ -58,4 +58,16 @@ public enum MIME {
 	public boolean equals(String str) {
 		return str.toLowerCase() == this.mime.toLowerCase();
 	}
+	
+	public static MIME fromString(String text) throws IllegalArgumentException {
+        if (text != null) {
+            for (MIME b : MIME.values()) {
+                if (text.equalsIgnoreCase(b.getMime())) {
+                    return b;
+                }
+            }
+        }
+        
+        throw new IllegalArgumentException();
+    }
 }
