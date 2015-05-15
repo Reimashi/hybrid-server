@@ -108,7 +108,7 @@ public class HTTPRequest {
                 if ((splits = httpline.split(":")).length == 2) {
                     try {
                         HTTPHeaders header = HTTPHeaders.fromString(splits[0].trim());
-                        this.rp_headerparameters.put(header.toString(), splits[1].trim());
+                        this.rp_headerparameters.put(header.getHeader(), splits[1].trim());
                     }
                     catch(IllegalArgumentException ex) {
                         HTTPRequest.log.log(Level.WARNING, "Linea " + line + 
@@ -120,8 +120,8 @@ public class HTTPRequest {
             // FIXME: Quizas necesito leer salto de linea.
             
             // Parseamos el cuerpo del mensaje
-            if (this.rp_headerparameters.containsKey(CONTENT_LENGTH.toString())) {
-            	String cl = this.rp_headerparameters.get(CONTENT_LENGTH.toString());
+            if (this.rp_headerparameters.containsKey(CONTENT_LENGTH.getHeader())) {
+            	String cl = this.rp_headerparameters.get(CONTENT_LENGTH.getHeader());
             	Integer cln = 0;
             	
             	try {
@@ -147,21 +147,29 @@ public class HTTPRequest {
             }
             
             // Parseamos los parámetros de POST
-            if (this.rp_headerparameters.containsKey(CONTENT_TYPE.toString())) {
-                String ctype = this.rp_headerparameters.get(CONTENT_TYPE.toString());
+            if (this.rp_headerparameters.containsKey(CONTENT_TYPE.getHeader())) {
+                String ctype = this.rp_headerparameters.get(CONTENT_TYPE.getHeader());
                 
-                if (MIME.FORM.equals(ctype) && this.rp_content.length() > 0) {
-                	if (this.rp_headerparameters.containsKey(HTTPHeaders.CONTENT_ENCODING.toString())) {
-                		String cencoding = this.rp_headerparameters.get(HTTPHeaders.CONTENT_ENCODING.toString());
-                		this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content, cencoding));
-                    } 
-                	else {
-                        this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content));
-                    }
-                }
-                else {
+            	try {
+	                MIME mtype = MIME.fromString(ctype);
+	                
+	                if (MIME.FORM == mtype && this.rp_content.length() > 0) {
+	                	if (this.rp_headerparameters.containsKey(HTTPHeaders.CONTENT_ENCODING.getHeader())) {
+	                		String cencoding = this.rp_headerparameters.get(HTTPHeaders.CONTENT_ENCODING.getHeader());
+	                		this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content, cencoding));
+	                    } 
+	                	else {
+	                        this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content));
+	                    }
+	                }
+	                else {
+	                    throw new HTTPParseException("Linea " + line + 
+	                    		": Error al decodificar un formulario POST.");
+	                }
+            	}
+                catch (IllegalArgumentException e) {
                     throw new HTTPParseException("Linea " + line + 
-                    		": Error al decodificar un formulario POST.");
+                    		": Tipo MIME desconocido " + ctype + ".");
                 }
             }
         }
