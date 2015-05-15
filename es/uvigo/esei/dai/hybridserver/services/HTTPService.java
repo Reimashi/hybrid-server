@@ -18,6 +18,8 @@ public class HTTPService {
 
 	private HTTPServer httpserver;
     private Thread httpserver_th;
+    
+    private boolean started = false;
 	
 	public HTTPService (Configuration conf, DBService dbs) {
 		this.config = conf;
@@ -27,12 +29,12 @@ public class HTTPService {
         this.httpserver.setServerName("HybridServer/0.2");
 
         // Establecemos las rutas (regexp) con su controlador asociado.
-        this.httpserver.getRouter().addRoute("^/$", new IndexController());
-        this.httpserver.getRouter().addRoute("^/welcome$", new IndexController());
-        this.httpserver.getRouter().addRoute("^/html.*", new HtmlController());
-        this.httpserver.getRouter().addRoute("^/xml.*", new XmlController());
-        this.httpserver.getRouter().addRoute("^/xsd.*", new XsdController());
-        this.httpserver.getRouter().addRoute("^/xslt.*", new XsltController());
+        this.httpserver.getRouter().addRoute("^/$", new IndexController(this.database));
+        this.httpserver.getRouter().addRoute("^/welcome$", new IndexController(this.database));
+        this.httpserver.getRouter().addRoute("^/html.*", new HtmlController(this.database));
+        this.httpserver.getRouter().addRoute("^/xml.*", new XmlController(this.database));
+        this.httpserver.getRouter().addRoute("^/xsd.*", new XsdController(this.database));
+        this.httpserver.getRouter().addRoute("^/xslt.*", new XsltController(this.database));
 	}
 
     /**
@@ -41,14 +43,15 @@ public class HTTPService {
 	public void start() {
         if (this.httpserver_th == null || !this.httpserver_th.isAlive()) {
             try {
-                this.httpserver_th = new Thread(this.httpserver);
-                this.httpserver_th.start();
+            	if (this.httpserver.open()) {
+                    this.httpserver_th = new Thread(this.httpserver);
+                    this.httpserver_th.start();
+                    this.started = true;
+            	}
             }
             catch (Exception ex) {
                 log.log(Level.SEVERE, "Error inexperado.\n{0}", ex.getMessage());
             }
-
-            log.log(Level.INFO, "Servidor HTTP iniciado. <http://localhost:" + this.config.getHttpPort() + ">");
         }
         else {
             log.info("El servicio HTTP ya había sido iniciado.");
@@ -59,7 +62,7 @@ public class HTTPService {
      * Para el servicio HTTP
      */
 	public void stop() {
-		if (this.httpserver_th != null && this.httpserver_th.isAlive()) {
+		if (this.started && this.httpserver_th != null && this.httpserver_th.isAlive()) {
 			this.httpserver_th.interrupt();
 			
 			if (!HTTPServer.testConnection(new InetSocketAddress("localhost", this.config.getHttpPort()))) {
@@ -73,6 +76,7 @@ public class HTTPService {
             }
             
             this.httpserver_th = null;
+            this.started = false;
             
             log.info("Servicio HTTP parado.");
 		}
@@ -80,4 +84,12 @@ public class HTTPService {
             log.info("El servicio HTTP ya estaba parado.");
         }
 	}
+    
+    /**
+     * Comprueba si el servidor esta iniciado
+     * @return Estado del servidor
+     */
+    public boolean isStarted() {
+    	return this.started;
+    }
 }

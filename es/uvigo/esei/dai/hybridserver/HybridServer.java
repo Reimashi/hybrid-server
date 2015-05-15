@@ -62,7 +62,7 @@ public class HybridServer {
      * @return Estado del servidor
      */
     public boolean isStarted() {
-    	return this.started;
+    	return this.started && this.htmlServer.isStarted();
     }
 	
 	/**
