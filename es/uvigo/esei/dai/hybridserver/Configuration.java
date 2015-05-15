@@ -100,7 +100,7 @@ public class Configuration {
 
         return new Configuration(
             Integer.parseInt(p.getProperty("port", ((Integer) defaultc.getHttpPort()).toString())),
-            Integer.parseInt(p.getProperty("numClients", ((Integer) defaultc.getHttpPort()).toString())),
+            Integer.parseInt(p.getProperty("numClients", ((Integer) defaultc.getNumClients()).toString())),
             p.getProperty("wps", defaultc.getWebServiceURL()),
             p.getProperty("db.user", defaultc.getDbUser()),
             p.getProperty("db.password", defaultc.getDbPassword()),

@@ -74,7 +74,7 @@ public class Launcher {
     	Launcher daemon = null;
 
         if (args.length > 0) {
-        	if (args[0].matches("/.*properties/i")) {
+        	if (args[0].endsWith(".conf")) {
         		try (InputStream is = new FileInputStream(args[0])) {
         			Properties props = new Properties();
                     props.load(is);
@@ -85,7 +85,7 @@ public class Launcher {
                     Launcher.log.log(Level.SEVERE, "The config file <{0}> couldn't be loaded correctly.", args[0]);
                 }
         	}
-        	else if (args[0].matches("/.*xml/i")) {
+        	else if (args[0].endsWith(".xml")) {
         		// Not implemented yet
         	}
         	else {
