@@ -47,9 +47,11 @@ public class HTTPService {
             catch (Exception ex) {
                 log.log(Level.SEVERE, "Error inexperado.\n{0}", ex.getMessage());
             }
+
+            log.log(Level.INFO, "Servidor HTTP iniciado. <http://localhost:" + this.config.getHttpPort() + ">");
         }
         else {
-            log.info("El servidor ya había sido iniciado.");
+            log.info("El servicio HTTP ya había sido iniciado.");
         }
 	}
 
@@ -71,9 +73,11 @@ public class HTTPService {
             }
             
             this.httpserver_th = null;
+            
+            log.info("Servicio HTTP parado.");
 		}
         else {
-            log.info("El servidor ya estaba parado.");
+            log.info("El servicio HTTP ya estaba parado.");
         }
 	}
 }

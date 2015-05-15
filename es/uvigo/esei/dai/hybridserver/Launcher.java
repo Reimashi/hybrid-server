@@ -58,6 +58,14 @@ public class Launcher {
     }
     
     /**
+     * Comprueba si el servidor esta iniciado
+     * @return Estado del servidor
+     */
+    public boolean isStarted() {
+    	return this.server.isStarted();
+    }
+    
+    /**
      * Punto de inicio del programa
      * @param args Argumentos pasados al ejecutable
      */
@@ -91,36 +99,38 @@ public class Launcher {
         
         if (daemon != null) {
             daemon.start();
-        	System.out.print("Server initiated. (http: " + daemon.getPort() + ")\n");
             
-            String command = "";
-            Scanner sc = new Scanner(System.in);
-            
-            while (true) {
-            	System.out.print("-> ");
-            	command = sc.nextLine();
-            	
-            	if (command.matches("help")) {
-            		Launcher.commandHelp();
-            	}
-            	else if (command.matches("stop")) {
-            		daemon.stop();
-                	System.out.print("Server stopped.\n");
-            		break;
-            	}
-            	else if (command.matches("restart")) {
-            		daemon.stop();
-                	System.out.print("Server stopped.\n");
-            		daemon = null;
-            		Launcher.main(args);
-            		break;
-            	}
-            	else {
-            		System.out.println("Command not found. Type \"help\"");
-            	}
+            if (daemon.isStarted()) {
+	            String command = "";
+	            Scanner sc = new Scanner(System.in);
+	            
+	            while (true) {
+	            	System.out.print("-> ");
+	            	command = sc.nextLine();
+	            	
+	            	if (command.matches("help")) {
+	            		Launcher.commandHelp();
+	            	}
+	            	else if (command.matches("stop")) {
+	            		daemon.stop();
+	            		break;
+	            	}
+	            	else if (command.matches("restart")) {
+	            		daemon.stop();
+	            		daemon = null;
+	            		Launcher.main(args);
+	            		break;
+	            	}
+	            	else {
+	            		System.out.println("Command not found. Type \"help\"");
+	            	}
+	            }
+	            
+	            sc.close();
             }
-            
-            sc.close();
+            else {
+            	System.out.println("Server can't be initiated. Check error log.");
+            }
         }
         else {
             Launcher.log.log(Level.SEVERE, "Unexpected error while server has initiating.", args[0]);

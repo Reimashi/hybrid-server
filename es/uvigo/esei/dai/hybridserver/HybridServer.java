@@ -16,6 +16,8 @@ public class HybridServer {
 	private final DBService dbServer;
     private final HTTPService htmlServer;
     private final JWSService jwsServer;
+    
+    private boolean started = false;
 	
 	public HybridServer (Configuration conf) {
 		this.config = conf;
@@ -32,10 +34,11 @@ public class HybridServer {
 		try {
 			this.dbServer.start();
 			this.htmlServer.start();
-			this.jwsServer.start();
+			//this.jwsServer.start();
+			this.started = true;
 		}
 		catch (SQLException e) {
-			log.log(Level.SEVERE, "Error, no se ha podido conectar a la base de datos.", e);
+			log.log(Level.SEVERE, "Error al conectar a la base de datos. {0}", e.getMessage());
 		}
 	}
 
@@ -46,12 +49,21 @@ public class HybridServer {
 		try {
 			this.dbServer.stop();
 			this.htmlServer.stop();
-			this.jwsServer.stop();
+			///this.jwsServer.stop();
+			this.started = false;
 		}
 		catch (SQLException e) {
 			log.log(Level.SEVERE, "Error, no se ha podido cerrar la conexión con la base de datos.", e);
 		}
 	}
+    
+    /**
+     * Comprueba si el servidor esta iniciado
+     * @return Estado del servidor
+     */
+    public boolean isStarted() {
+    	return this.started;
+    }
 	
 	/**
 	 * Obtiene la configuración del servidor.
