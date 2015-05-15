@@ -89,7 +89,7 @@ public class DocumentDAO {
             query = "SELECT uuid, xsd FROM " + type.getName();
         }
         else {
-            query = "SELECT uuid, xsd FROM " + type.getName();
+            query = "SELECT uuid FROM " + type.getName();
         }
 
         try (PreparedStatement cons = this.db.getConnection().
