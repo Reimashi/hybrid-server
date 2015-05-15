@@ -25,6 +25,7 @@ public enum HTTPHeaders {
     CONTENT_ENCODING("Content-Encoding"),
     CONTENT_TYPE("Content-Type"),
     USER_AGENT("User-Agent"),
+    X_REQUESTED_WITH("X-Requested-With"),
     CONNECTION("Connection"),
     ACCEPT("Accept"),
     HOST("Host"),
@@ -49,7 +50,7 @@ public enum HTTPHeaders {
 	public static HTTPHeaders fromString(String text) throws IllegalArgumentException {
         if (text != null) {
             for (HTTPHeaders b : HTTPHeaders.values()) {
-                if (text.equalsIgnoreCase(b.toString())) {
+                if (text.equalsIgnoreCase(b.getHeader())) {
                     return b;
                 }
             }
