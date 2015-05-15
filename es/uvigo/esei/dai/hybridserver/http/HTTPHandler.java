@@ -29,11 +29,12 @@ public class HTTPHandler implements Runnable {
             // Manejamos la petición
             try {
                 req = new HTTPRequest(in);
-            	System.out.println("Peticion bien: " + req.getResourceChain() + " # "+req.getResourceName());
-                res = this.server.getRouter().handle(req);
+                req.setClientAddress(this.clientSocket.getInetAddress());
+
+            	res = this.server.getRouter().handle(req);
             }
             catch (HTTPParseException ex) {
-            	System.out.println("Peticion mal: " + ex.getMessage());
+            	log.log(Level.INFO, "Bad request from " + this.clientSocket.getInetAddress().toString());
             	res = new HTTPResponse(HTTPResponseStatus.S400);
             }
         	

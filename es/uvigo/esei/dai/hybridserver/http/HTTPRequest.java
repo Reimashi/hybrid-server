@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -44,6 +45,8 @@ public class HTTPRequest {
     private final Map<String, String> rp_resourceparameters = new LinkedHashMap<>();
     
     private final String rp_content;
+    
+    private InetAddress client_address;
     
 	public HTTPRequest(Reader reader) throws IOException, HTTPParseException {
         BufferedReader br = new BufferedReader(reader);
@@ -166,6 +169,14 @@ public class HTTPRequest {
             throw new HTTPParseException("Linea " + line + 
             		": Error de lectura en la petición HTTP.");
         }
+	}
+	
+	public void setClientAddress(InetAddress addr) {
+		this.client_address = addr;
+	}
+	
+	public InetAddress getClientAddress() {
+		return this.client_address;
 	}
 
 	public HTTPRequestMethod getMethod() {
