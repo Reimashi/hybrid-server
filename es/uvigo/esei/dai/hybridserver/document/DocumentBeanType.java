@@ -4,7 +4,8 @@ public enum DocumentBeanType {
 	HTML ("HTML"),
 	XML ("XML"),
 	XSD ("XSD"),
-	XSLT ("XSLT");
+	XSLT ("XSLT"),
+	UNDEFINED ("Undefined");
 	
 	private final String value;
 	

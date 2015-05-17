@@ -2,6 +2,7 @@ package es.uvigo.esei.dai.hybridserver.document;
 
 
 import java.io.*;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +40,7 @@ public class DocumentBean implements Serializable {
 	}
 
 	/**
-	 * Valida un documento XML a partir de un documento XSD
+	 * Valida un documento XML a partir de un documento XSD (SAX)
 	 * @param xml Documento XML
 	 * @param xsd Documento XSD
 	 * @return Estado de la validación
@@ -49,48 +50,92 @@ public class DocumentBean implements Serializable {
             try {
                 Source xsdsrc = new StreamSource(new java.io.StringReader(xsd.getContent()));
                 Source xmlsrc = new StreamSource(new java.io.StringReader(xml.getContent()));
-
-                SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                Schema schema = schemaFactory.newSchema(xsdsrc);
-
-                Validator validator = schema.newValidator();
-                validator.validate(xmlsrc);
-                return true;
-            } catch (IOException | SAXException e) {
+                
+                try {
+	                SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+	                Schema schema = schemaFactory.newSchema(xsdsrc);
+	                
+	                try {
+	                    Validator validator = schema.newValidator();
+	                    validator.validate(xmlsrc);
+	                    
+	                    return true;
+	                }
+	                catch(SAXException e) {
+	                    log.log(Level.WARNING, "Error while parse an XML document.", e);
+	                }
+                }
+                catch(SAXException e) {
+                    log.log(Level.WARNING, "Error while parse an XSD document.", e);
+                }
+            } catch (IOException e) {
                 log.log(Level.WARNING, "Error while parse an XML document with a XSD document.", e);
             }
         }
+		
         return false;
 	}
+	
+	/**
+	 * Carga un archivo en un contenedor DocumentBean
+	 * @param xmlPath Ruta del archivo
+	 * @return Contenedor del documento
+	 */
+    public static DocumentBean FromFile(String fPath) throws FileNotFoundException, IOException {
+    	return DocumentBean.FromFile(new File(fPath));
+    }
+	
+	/**
+	 * Carga un archivo en un contenedor DocumentBean
+	 * @param xmlFile Archivo
+	 * @return Contenedor del documento
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
+    public static DocumentBean FromFile(File fFile) throws FileNotFoundException, IOException {
+        DocumentBean doc = new DocumentBean();
+        DocumentBeanInfo docMeta = new DocumentBeanInfo();
+        docMeta.setID(UUID.randomUUID());
+        
+        String extension = "";
+        int i = fFile.getName().lastIndexOf('.');
+        if (i > 0 && i < fFile.getName().length()) {
+            extension = fFile.getName().substring(i+1).toLowerCase();
+        }
+        
+        switch (extension) {
+	        case "html":
+	        	docMeta.setType(DocumentBeanType.HTML);
+	        	break;
+	        case "xml":
+	        	docMeta.setType(DocumentBeanType.XML);
+	        	break;
+	        case "xsd":
+	        	docMeta.setType(DocumentBeanType.XSD);
+	        	break;
+	        case "xslt":
+	        	docMeta.setType(DocumentBeanType.XSLT);
+	        	break;
+	    	default:
+	        	docMeta.setType(DocumentBeanType.UNDEFINED);
+	        	break;	
+        }
+        
+        doc.setInfo(docMeta);
 
-    /**
-     * Valida un documento XML a partir de un documento XSD
-     * @param xmlPath Ruta al documento XML
-     * @return DocumentBean con un string conteniendo el documento
-     */
-    public static DocumentBean FromFile(String xmlPath){
-        DocumentBean configuracion = new DocumentBean();
-        DocumentBeanInfo configuracionMeta = new DocumentBeanInfo();
-        configuracionMeta.setType(DocumentBeanType.XML);
-        if (configuracion.getInfo().getType() == DocumentBeanType.XML) {
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader(new File(xmlPath)));
-                String line;
-                StringBuilder sb = new StringBuilder();
-
-                if (br != null) {
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line.trim());
-                    }
-                    configuracion.setContent(sb.toString());
-
-                    configuracion.setInfo(configuracionMeta);
-                }
-            } catch (IOException e){
-                log.log(Level.WARNING, "Error while parse an XML document.", e);
+        StringBuilder sb = new StringBuilder();
+		String EOL = System.getProperty("line.separator");
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(fFile)))
+        {
+        	String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line + EOL);
             }
         }
-        return configuracion;
+        
+        doc.setContent(sb.toString());
+        
+        return doc;
     }
 }
