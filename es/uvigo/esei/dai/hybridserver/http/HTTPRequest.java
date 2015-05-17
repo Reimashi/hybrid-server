@@ -192,20 +192,21 @@ public class HTTPRequest {
 	}
 
 	public String getResourceChain() {
-		return this.rp_resource_path;
+		return this.rp_path;
 	}
 	
 	public String[] getResourcePath() {
-		return null; // No lo usa en los test... pa que vale?
+		return this.rp_resource_path.split("/");
+		// No lo usa en los test... es esto lo que debería hacer?
 	}
 	
 	public String getResourceName() {
 		if (this.rp_resource_path.contains("/")) {
-			if (this.rp_resource_path.lastIndexOf("/") == this.rp_resource_path.length()) {
+			if (this.rp_resource_path.indexOf("/") == this.rp_resource_path.length()) {
 				return "";
 			}
 			else {
-				return this.rp_resource_path.substring(this.rp_resource_path.lastIndexOf("/") + 1);
+				return this.rp_resource_path.substring(this.rp_resource_path.indexOf("/") + 1);
 			}
 		}
 		else {
@@ -227,7 +228,7 @@ public class HTTPRequest {
 
 	public String getContent() {
         if (this.getContentLength() == 0) {
-            return "";
+            return null;
         }
         else {
             if (this.getHeaderParameters().containsKey("Content-Type") &&

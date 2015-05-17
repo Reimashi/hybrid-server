@@ -10,10 +10,12 @@ import es.uvigo.esei.dai.hybridserver.dao.DocumentDAO;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBean;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBeanInfo;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBeanType;
+import es.uvigo.esei.dai.hybridserver.http.HTTPHeaders;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequestHandler;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
+import es.uvigo.esei.dai.hybridserver.http.MIME;
 import es.uvigo.esei.dai.hybridserver.jws.HybridServerJwsClient;
 import es.uvigo.esei.dai.hybridserver.services.DBService;
 
@@ -96,6 +98,7 @@ public class HtmlController extends HTTPRequestHandler {
 
 			HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
 			res.setContent(html.toString());
+			res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.HTML.getMime());
 			return res;
 		} catch (SQLException e) {
 			log.log(Level.WARNING, "Error manejando una peticion. {0}", e.getMessage());
@@ -112,6 +115,7 @@ public class HtmlController extends HTTPRequestHandler {
 			if (doc != null) {
 				HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
 				res.setContent(doc.getContent());
+				res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.HTML.getMime());
 				return res;
 			}
 			else {
@@ -120,6 +124,7 @@ public class HtmlController extends HTTPRequestHandler {
 				if (docr != null) {
 					HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
 					res.setContent(docr.getContent());
+					res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.HTML.getMime());
 					return res;
 				}
 				else {
@@ -163,6 +168,7 @@ public class HtmlController extends HTTPRequestHandler {
 				
 				HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
 				res.setContent(html.toString());
+				res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.HTML.getMime());
 				return res;
 			}
 			catch(SQLException e) {
@@ -197,7 +203,7 @@ public class HtmlController extends HTTPRequestHandler {
 
 	private static String deleteButton(UUID id) {
 		return "<a href=\"#\" onclick=\""
-		    + "$.ajax({ url: '/html?uuid=" + id.toString() + "', type: 'DELETE', success: function(result) { location.reload(); } });"
+		    + "$.ajax({ url: '/html?uuid=" + id.toString() + "', type: 'DELETE', success: function(result) { location.reload(); } }); return false;"
 			+ "\">Borrar</a>";
 	}
 }
