@@ -108,4 +108,23 @@ public class Configuration {
             new ArrayList<ServerConfiguration>()
         );
     }
+    
+    @Override
+    public String toString() {
+		StringBuilder conf = new StringBuilder();
+		String EOL = System.getProperty("line.separator");
+
+		conf.append("HTTP - Puerto: " + this.LPort + EOL);
+		conf.append("HTTP - Max. peticiones: " + this.LNumUsers + EOL);
+		conf.append("DB   - Usuario: " + this.LdbUser + EOL);
+		conf.append("DB   - Contraseña: " + this.LdbPassword + EOL);
+		conf.append("DB   - Dirección: " + this.LdbUrl + EOL);
+		conf.append("JWS  - Dirección: " + this.LwsUrl + EOL);
+		
+		for (ServerConfiguration sc : this.getServers()) {
+			conf.append("P2P  - " + sc.toString() + EOL);
+		}
+		
+		return conf.toString();
+    }
 }

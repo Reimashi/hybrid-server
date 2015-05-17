@@ -34,4 +34,17 @@ public class ServerConfiguration {
     public String getHttpAddress() {
         return this.LHttpAddress;
     }
+    
+    @Override
+    public String toString() {
+    	StringBuilder sb = new StringBuilder();
+
+		sb.append("Name: " + this.getName());
+		sb.append(" | Wsdl: " + this.getWsdl());
+		sb.append(" | Namespace: " + this.getNamespace());
+		sb.append(" | Service: " + this.getService());
+		sb.append(" | HttpAddress: " + this.getHttpAddress());
+    	
+    	return sb.toString();
+    }
 }
