@@ -1,9 +1,16 @@
 package es.uvigo.esei.dai.hybridserver;
 
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import es.uvigo.esei.dai.hybridserver.dao.DocumentDAO;
+import es.uvigo.esei.dai.hybridserver.document.DocumentBean;
+import es.uvigo.esei.dai.hybridserver.document.DocumentBeanInfo;
+import es.uvigo.esei.dai.hybridserver.document.DocumentBeanType;
 import es.uvigo.esei.dai.hybridserver.services.DBService;
 import es.uvigo.esei.dai.hybridserver.services.HTTPService;
 import es.uvigo.esei.dai.hybridserver.services.JWSService;
@@ -19,12 +26,62 @@ public class HybridServer {
     
     private boolean started = false;
 	
+	public HybridServer () {
+		this(new Configuration());
+	}
+	
+	public HybridServer (Properties conf) {
+		this(Configuration.fromProperties(conf));
+	}
+	
+	/**
+	 * Necesario para test de week2
+	 * @param pages
+	 */
+	public HybridServer (Map<String, String> pages) {
+		this(new Configuration());
+
+		try {
+			this.dbServer.start();
+		}
+		catch (SQLException e) {
+			log.log(Level.SEVERE, "Error al conectar a la base de datos. {0}", e.getMessage());
+		}
+		
+		DocumentDAO dao = new DocumentDAO(this.dbServer);
+		
+		for (String id : pages.keySet()) {
+			DocumentBeanInfo docinfo = new DocumentBeanInfo();
+			docinfo.setID(UUID.fromString(id));
+			docinfo.setType(DocumentBeanType.HTML);
+			
+			DocumentBean doc = new DocumentBean();
+			doc.setInfo(docinfo);
+			doc.setContent(pages.get(id));
+			
+			try {
+				dao.add(DocumentBeanType.HTML, doc);
+			} catch (SQLException e) {
+				log.log(Level.SEVERE, "Error al insertar pagina de ejemplo ({0}). {1}", new Object[] { id, e.getMessage() });
+			}
+		}
+		
+		try {
+			this.dbServer.stop();
+		}
+		catch (SQLException e) {
+			log.log(Level.SEVERE, "Error, no se ha podido cerrar la conexión con la base de datos.", e);
+		}
+	}
+		
 	public HybridServer (Configuration conf) {
 		this.config = conf;
 		
 		this.dbServer = new DBService(this.config);
 		this.htmlServer = new HTTPService(this.config, this.dbServer);
 		this.jwsServer = new JWSService(this.config, this.dbServer);
+		
+		System.out.println(this.config.toString());
 	}
 
     /**
@@ -73,4 +130,13 @@ public class HybridServer {
 	public Configuration getConfiguration() {
 		return this.config;
 	}
+    
+    /**
+     * Obtiene el puerto HTTP del servidor.
+     * 
+     * @return Número de puerto.
+     */
+    public int getPort() {
+    	return this.config.getHttpPort();
+    }
 }
