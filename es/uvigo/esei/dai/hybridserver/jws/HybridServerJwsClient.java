@@ -9,75 +9,118 @@ import es.uvigo.esei.dai.hybridserver.document.DocumentBeanType;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class HybridServerJwsClient implements IDocumentJwsService {
+public class HybridServerJwsClient {
+    private static final Logger log = Logger.getLogger(HybridServerJwsClient.class.getName());
+    
     private Configuration configuration;
 
     public HybridServerJwsClient(Configuration conf) {
         this.configuration = conf;
     }
 
-    private List<HybridServerService> getServices() {
-        ArrayList<HybridServerService> services = new ArrayList<>();
+    public Map<String, HybridServerService> getServices() {
+        
+    	Map<String, HybridServerService> services = new HashMap<>();
 
         for (ServerConfiguration co : this.configuration.getServers()) {
             try {
                 QName name = new QName(co.getNamespace(), co.getService());
                 Service service = Service.create(new URL(co.getHttpAddress()), name);
+                
                 HybridServerService serv = service.getPort(HybridServerService.class);
-                services.add(serv);
+                
+                services.put(co.getName(), serv);
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+    			log.log(Level.WARNING, "La dirección de un servicio web no es valida. {0}", e.getMessage());
+            }
+            catch (WebServiceException e) {
+    			log.log(Level.WARNING, "Error al conectar a un servicio web. {0}", e.getMessage());
             }
         }
-
+        
         return services;
     }
 
-	@Override
-	public DocumentBean get(DocumentBeanType type, UUID id) {
-		for (HybridServerService service : this.getServices()) {
+	public Entry<String, DocumentBean> get(DocumentBeanType type, UUID id) {
+    	Map<String, HybridServerService> services = this.getServices();
+		for (String servername : services.keySet()) {
+			HybridServerService service = services.get(servername);
 			DocumentBean document = service.get(type, id);
-			if (document != null) { return document; }
+
+			if (document != null) { 
+				return new AbstractMap.SimpleEntry<>(servername, document);
+			}
 		}
 
 		return null;
 	}
 
-	@Override
-	public boolean delete(DocumentBeanType type, UUID id) {
-		for (HybridServerService service : this.getServices()) {
-			service.delete(type, id);
+	public Map<String, Boolean> delete(DocumentBeanType type, UUID id) {
+    	Map<String, HybridServerService> services = this.getServices();
+		Map<String, Boolean> toret = new HashMap<String,Boolean>();
+
+		for (String servername : services.keySet()) {
+			HybridServerService service = services.get(servername);
+			toret.put(servername, service.delete(type, id));
 		}
 		
-		return true;
+		return toret;
 	}
 
-	@Override
-	public List<DocumentBeanInfo> list(DocumentBeanType type) {
-		List<UUID> listids = new ArrayList<>();
+	public Map<String, List<DocumentBeanInfo>> list(DocumentBeanType type) {
+    	Map<String, HybridServerService> services = this.getServices();
+		Map<String, List<DocumentBeanInfo>> toret = new HashMap<>();
+
+		for (String servername : services.keySet()) {
+			HybridServerService service = services.get(servername);
+			toret.put(servername, service.list(type));
+		}
+		
+		return toret;
+	}
+
+	public Map<String, Integer> count(DocumentBeanType type) {
+    	Map<String, HybridServerService> services = this.getServices();
+		Map<String, Integer> toret = new HashMap<>();
+
+		for (String servername : services.keySet()) {
+			HybridServerService service = services.get(servername);
+			toret.put(servername, service.count(type));
+		}
+		
+		return toret;
+	}
+
+    public int countTotal(DocumentBeanType type) {
+		return uniqueList(this.list(type)).size();
+	}
+	
+	public static List<DocumentBeanInfo> uniqueList(Map<String, List<DocumentBeanInfo>> list) {
+		List<UUID> ids = new ArrayList<>();
 		List<DocumentBeanInfo> documents = new ArrayList<>();
 		
-		for (HybridServerService service : this.getServices()) {
-			for (DocumentBeanInfo doc : service.list(type)) {
-				if (!listids.contains(doc.getID())) {
-					listids.add(doc.getID());
-					documents.add(doc);
+		for (List<DocumentBeanInfo> ds : list.values()) {
+			for (DocumentBeanInfo bi : ds) {
+				if (!ids.contains(bi.getID())) {
+					documents.add(bi);
 				}
 			}
 		}
 		
 		return documents;
-	}
-
-	@Override
-	public int count(DocumentBeanType type) {
-		return this.list(type).size();
 	}
 }
