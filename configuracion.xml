@@ -1,4 +1,8 @@
-<configuration xmlns="http://www.esei.uvigo.es/dai/proyecto" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.esei.uvigo.es/dai/proyecto configuracion.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+ <configuration
+		 xmlns="http://www.esei.uvigo.es/dai/proyecto" 
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		 xsi:schemaLocation="http://www.esei.uvigo.es/dai/proyecto configuracion.xsd">
     <connections>
         <http>10001</http>
         <webservice>http://localhost:20001/hybridserver</webservice>
@@ -7,7 +11,7 @@
     <database>
         <user>hybridserver</user>
         <password>hybridserver</password>
-        <url>jdbc:mysql:/localhost:3306/dai</url>
+        <url>jdbc:mysql://localhost:3306/dai</url>
     </database>
     <servers>
         <server name="Server 2" wsdl="http://localhost:20002/hybridserver?wsdl" namespace="http://hybridserver.dai.esei.uvigo.es/" service="HybridServerService" httpAddress="http://localhost:10002/"/>
