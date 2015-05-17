@@ -1,5 +1,6 @@
 package es.uvigo.esei.dai.hybridserver;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -65,6 +66,10 @@ public class Launcher {
     	return this.server.isStarted();
     }
     
+    public Configuration getConfiguration() {
+    	return this.server.getConfiguration();
+    }
+    
     /**
      * Punto de inicio del programa
      * @param args Argumentos pasados al ejecutable
@@ -86,7 +91,13 @@ public class Launcher {
                 }
         	}
         	else if (args[0].endsWith(".xml")) {
-        		// Not implemented yet
+				try {
+	        		XMLConfigurationLoader xmll = new XMLConfigurationLoader();
+	        		Configuration conf = xmll.load(new File(args[0]));
+	        		daemon = new Launcher(conf);
+				} catch (Exception e) {
+                    Launcher.log.log(Level.SEVERE, "The config file <{0}> couldn't be loaded correctly.", e.toString());
+				}
         	}
         	else {
                 Launcher.log.log(Level.SEVERE, "Invalid config file format.");
@@ -110,6 +121,9 @@ public class Launcher {
 	            	
 	            	if (command.matches("help")) {
 	            		Launcher.commandHelp();
+	            	}
+	            	else if (command.matches("config")) {
+	            		System.out.println(daemon.getConfiguration());
 	            	}
 	            	else if (command.matches("stop")) {
 	            		daemon.stop();
@@ -146,6 +160,7 @@ public class Launcher {
     	System.out.println();
     	System.out.println("\tstop\tStop and close the server.");
     	System.out.println("\trestart\tRestart the server.");
+    	System.out.println("\tconfig\tShow the configuration.");
     	System.out.println("\thelp\tShow this help.");
     	System.out.println();
     }
