@@ -2,6 +2,7 @@ package es.uvigo.esei.dai.hybridserver.httpcontrollers;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +45,7 @@ public class HtmlController extends HTTPRequestHandler {
 			// Obtenemos la lista de documentos
 			DocumentDAO dao = new DocumentDAO(this.db);
 			List<DocumentBeanInfo> documents = dao.getList(DocumentBeanType.HTML);
-			List<DocumentBeanInfo> remoteDocuments = dao.getList(DocumentBeanType.HTML);
+			Map<String, List<DocumentBeanInfo>> remoteDocuments = this.jwsclient.list(DocumentBeanType.HTML);
 			
 			StringBuilder html = new StringBuilder();
 
@@ -67,29 +68,12 @@ public class HtmlController extends HTTPRequestHandler {
 						+ "<form>"
 					+ "</p>");
 
-			html.append("<p><h2>Documentos HTML (Servidor local)</h2></p>");
-			if (documents.size() > 0) {
-				html.append("<p><ul>");
-				
-				for (DocumentBeanInfo doc : documents) {
-					html.append("<li><a href=\"/html?uuid=" + doc.getID().toString() + "\">" + doc.getID().toString() + "</a> - " + deleteButton(doc.getID()) + "</li>");
-				}
-				
-				html.append("</ul></p>");
-			}
-			else {
-				html.append("<p>No hay ningún documento en el repositorio</p>");
-			}
+			html.append("<p><h2>Documentos HTML</h2></p>");
 			
-			if (remoteDocuments.size() > 0) {
-				html.append("<p><h2>Documentos HTML (Servidores remotos)</h2></p>");
-				html.append("<p><ul>");
-				
-				for (DocumentBeanInfo doc : remoteDocuments) {
-					html.append("<li><a href=\"/html?uuid=" + doc.getID().toString() + "\">" + doc.getID().toString() + "</a> - " + deleteButton(doc.getID()) + "</li>");
-				}
-				
-				html.append("</ul></p>");
+			html.append(this.htmlDocumentList("Localhost", documents));
+			
+			for (String sname : remoteDocuments.keySet()) {
+				html.append(this.htmlDocumentList(sname, remoteDocuments.get(sname)));
 			}
 
 			html.append("</body>");
@@ -106,6 +90,26 @@ public class HtmlController extends HTTPRequestHandler {
 		}
 	}
 	
+	private String htmlDocumentList(String server, List<DocumentBeanInfo> documents) {
+		StringBuilder html = new StringBuilder();
+		
+		if (documents.size() > 0) {
+			html.append("<p><h3>- " + server + "</h3></p>");
+			html.append("<p><ul>");
+			
+			for (DocumentBeanInfo doc : documents) {
+				html.append("<li><a href=\"/html?uuid=" + doc.getID().toString() + "\">" + doc.getID().toString() + "</a> - " + deleteButton(doc.getID()) + "</li>");
+			}
+			
+			html.append("</ul></p>");
+		}
+		else {
+			html.append("<p>No hay ningún documento en el repositorio</p>");
+		}
+		
+		return html.toString();
+	}
+	
 	private HTTPResponse getDocument(UUID id) {
 		DocumentDAO dao = new DocumentDAO(this.db);
 		
@@ -119,7 +123,7 @@ public class HtmlController extends HTTPRequestHandler {
 				return res;
 			}
 			else {
-				DocumentBean docr = this.jwsclient.get(DocumentBeanType.HTML, id);
+				DocumentBean docr = this.jwsclient.get(DocumentBeanType.HTML, id).getValue();
 				
 				if (docr != null) {
 					HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
