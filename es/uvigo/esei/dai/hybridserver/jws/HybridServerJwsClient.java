@@ -1,6 +1,7 @@
 package es.uvigo.esei.dai.hybridserver.jws;
 
 import es.uvigo.esei.dai.hybridserver.Configuration;
+import es.uvigo.esei.dai.hybridserver.HybridServerService;
 import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBean;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBeanInfo;
@@ -22,14 +23,14 @@ public class HybridServerJwsClient implements IDocumentJwsService {
         this.configuration = conf;
     }
 
-    private List<HybridServerJwsService> getServices() {
-        ArrayList<HybridServerJwsService> services = new ArrayList<>();
+    private List<HybridServerService> getServices() {
+        ArrayList<HybridServerService> services = new ArrayList<>();
 
         for (ServerConfiguration co : this.configuration.getServers()) {
             try {
                 QName name = new QName(co.getNamespace(), co.getService());
                 Service service = Service.create(new URL(co.getHttpAddress()), name);
-                HybridServerJwsService serv = service.getPort(HybridServerJwsService.class);
+                HybridServerService serv = service.getPort(HybridServerService.class);
                 services.add(serv);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -41,7 +42,7 @@ public class HybridServerJwsClient implements IDocumentJwsService {
 
 	@Override
 	public DocumentBean get(DocumentBeanType type, UUID id) {
-		for (HybridServerJwsService service : this.getServices()) {
+		for (HybridServerService service : this.getServices()) {
 			DocumentBean document = service.get(type, id);
 			if (document != null) { return document; }
 		}
@@ -51,7 +52,7 @@ public class HybridServerJwsClient implements IDocumentJwsService {
 
 	@Override
 	public boolean delete(DocumentBeanType type, UUID id) {
-		for (HybridServerJwsService service : this.getServices()) {
+		for (HybridServerService service : this.getServices()) {
 			service.delete(type, id);
 		}
 		
@@ -63,7 +64,7 @@ public class HybridServerJwsClient implements IDocumentJwsService {
 		List<UUID> listids = new ArrayList<>();
 		List<DocumentBeanInfo> documents = new ArrayList<>();
 		
-		for (HybridServerJwsService service : this.getServices()) {
+		for (HybridServerService service : this.getServices()) {
 			for (DocumentBeanInfo doc : service.list(type)) {
 				if (!listids.contains(doc.getID())) {
 					listids.add(doc.getID());
