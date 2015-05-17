@@ -95,8 +95,11 @@ public class Launcher {
 	        		XMLConfigurationLoader xmll = new XMLConfigurationLoader();
 	        		Configuration conf = xmll.load(new File(args[0]));
 	        		daemon = new Launcher(conf);
-				} catch (Exception e) {
-                    Launcher.log.log(Level.SEVERE, "The config file <{0}> couldn't be loaded correctly.", e.toString());
+				} catch (NullPointerException e) {
+					Launcher.log.log(Level.SEVERE, "The config file <{1}> couldn't be loaded correctly.", new String[] { e.getMessage(), args[0] });
+				}
+				catch (Exception e) {
+					Launcher.log.log(Level.SEVERE, "", e);
 				}
         	}
         	else {
@@ -147,7 +150,7 @@ public class Launcher {
             }
         }
         else {
-            Launcher.log.log(Level.SEVERE, "Unexpected error while server has initiating.", args[0]);
+            Launcher.log.log(Level.SEVERE, "El servidor no ha podido ser iniciado.", args[0]);
         }
     }
     

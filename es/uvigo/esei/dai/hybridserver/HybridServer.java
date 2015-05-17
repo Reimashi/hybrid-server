@@ -80,8 +80,6 @@ public class HybridServer {
 		this.dbServer = new DBService(this.config);
 		this.htmlServer = new HTTPService(this.config, this.dbServer);
 		this.jwsServer = new JWSService(this.config, this.dbServer);
-		
-		System.out.println(this.config.toString());
 	}
 
     /**
