@@ -15,10 +15,25 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+
+@XmlRootElement(name = "documentBean")
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlType(name = "documentType",
+	namespace="es.uvigo.esei.dai.hybridserver", 
+	propOrder = {
+        "info",
+        "content"
+})
 public class DocumentBean implements Serializable {
 	private static final long serialVersionUID = 4729980263308146090L;
 	private final static Logger log = Logger.getLogger(DocumentBean.class.getName());
-	
+
+    @XmlElement(name = "info", required = true)
 	private DocumentBeanInfo info;
 	
 	public DocumentBeanInfo getInfo() {
@@ -28,7 +43,8 @@ public class DocumentBean implements Serializable {
 	public void setInfo(DocumentBeanInfo info) {
 		this.info = info;
 	}
-	
+
+    @XmlElement(name = "content", required = true)
 	private String content;
 	
 	public String getContent() {
