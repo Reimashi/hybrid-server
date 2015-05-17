@@ -36,6 +36,7 @@ public class HTTPRouter {
 	        for (String route: this.routes.keySet()) {
 	            if (link.matches(route)) {
 	            	HTTPRequestHandler rh = this.routes.get(route);
+	            	log.log(Level.INFO, "Manejando (" + req.getMethod().name() + " -> " + link + ") con: " + rh.getClass().getName());
 	            	
 	            	switch (req.getMethod()) {
 		        		case HEAD:

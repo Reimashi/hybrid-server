@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import javax.xml.ws.Endpoint;
 
 import es.uvigo.esei.dai.hybridserver.Configuration;
-import es.uvigo.esei.dai.hybridserver.jws.HybridServerJwsService;
+import es.uvigo.esei.dai.hybridserver.HybridServerService;
 
 /**
  * Servicio Java Web Service para HybridServer
@@ -33,7 +33,7 @@ public class JWSService {
     	if (this.htmlep == null) {
     		this.htmlep = Endpoint.publish(
     				this.config.getWebServiceURL(), 
-    				new HybridServerJwsService(this.database)
+    				new HybridServerService(this.database)
     			);
     		log.log(Level.INFO, "Servidor JWS iniciado. <" + this.config.getWebServiceURL() + ">");
     	}

@@ -3,6 +3,7 @@ package es.uvigo.esei.dai.hybridserver.services;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import es.uvigo.esei.dai.hybridserver.Configuration;
@@ -28,6 +29,7 @@ public class DBService {
 	    			this.config.getDbUser(), 
 	    			this.config.getDbPassword()
 	    		);
+    		log.log(Level.INFO, "Cliente DB iniciado. <" + this.config.getDbURL() + ">");
     	}
     }
 
@@ -38,6 +40,7 @@ public class DBService {
     	if (this.connection != null) {
 	    	this.connection.close();
 	    	this.connection = null;
+    		log.log(Level.INFO, "Cliente DB parado.");
     	}
     }
 
