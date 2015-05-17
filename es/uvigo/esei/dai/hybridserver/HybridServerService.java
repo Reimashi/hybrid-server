@@ -1,4 +1,4 @@
-package es.uvigo.esei.dai.hybridserver.jws;
+package es.uvigo.esei.dai.hybridserver;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,13 +12,16 @@ import es.uvigo.esei.dai.hybridserver.dao.DocumentDAO;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBean;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBeanInfo;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBeanType;
+import es.uvigo.esei.dai.hybridserver.jws.IDocumentJwsService;
 import es.uvigo.esei.dai.hybridserver.services.DBService;
 
-@WebService
-public class HybridServerJwsService implements IDocumentJwsService {
+@WebService(
+	endpointInterface = "es.uvigo.esei.dai.hybridserver.HybridServerService"
+)
+public class HybridServerService implements IDocumentJwsService {
 	private final DocumentDAO dao;
 	
-	public HybridServerJwsService (DBService db) {
+	public HybridServerService (DBService db) {
 		this.dao = new DocumentDAO(db);
 	}
 
