@@ -102,9 +102,9 @@ public class HybridServer {
      */
 	public void stop() {
 		try {
-			this.dbServer.stop();
 			this.jwsServer.stop();
 			this.htmlServer.stop();
+			this.dbServer.stop();
 			this.started = false;
 		}
 		catch (SQLException e) {

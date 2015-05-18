@@ -27,17 +27,6 @@ public class HTTPService {
 		this.database = dbs;
 		
 		this.jwsclient = new HybridServerJwsClient(conf, dbs);
-		
-		this.httpserver = new HTTPServer(conf.getHttpPort(), conf.getNumClients());
-        this.httpserver.setServerName("HybridServer/0.2");
-
-        // Establecemos las rutas (regexp) con su controlador asociado.
-        this.httpserver.getRouter().addRoute("^/$", new IndexController(this.database, this.jwsclient));
-        this.httpserver.getRouter().addRoute("^/welcome$", new IndexController(this.database, this.jwsclient));
-        this.httpserver.getRouter().addRoute("^/html.*", new HtmlController(this.database, this.jwsclient));
-        this.httpserver.getRouter().addRoute("^/xml.*", new XmlController(this.database, this.jwsclient));
-        this.httpserver.getRouter().addRoute("^/xsd.*", new XsdController(this.database, this.jwsclient));
-        this.httpserver.getRouter().addRoute("^/xslt.*", new XsltController(this.database, this.jwsclient));
 	}
 
     /**
@@ -45,6 +34,17 @@ public class HTTPService {
      */
 	public void start() {
         if (this.httpserver_th == null || !this.httpserver_th.isAlive()) {
+    		this.httpserver = new HTTPServer(this.config.getHttpPort(), this.config.getNumClients());
+            this.httpserver.setServerName("HybridServer/0.2");
+
+            // Establecemos las rutas (regexp) con su controlador asociado.
+            this.httpserver.getRouter().addRoute("^/$", new IndexController(this.database, this.jwsclient));
+            this.httpserver.getRouter().addRoute("^/welcome$", new IndexController(this.database, this.jwsclient));
+            this.httpserver.getRouter().addRoute("^/html.*", new HtmlController(this.database, this.jwsclient));
+            this.httpserver.getRouter().addRoute("^/xml.*", new XmlController(this.database, this.jwsclient));
+            this.httpserver.getRouter().addRoute("^/xsd.*", new XsdController(this.database, this.jwsclient));
+            this.httpserver.getRouter().addRoute("^/xslt.*", new XsltController(this.database, this.jwsclient));
+            
             try {
             	if (this.httpserver.open()) {
                     this.httpserver_th = new Thread(this.httpserver);
@@ -74,12 +74,21 @@ public class HTTPService {
 			
             try {
                 this.httpserver_th.join();
+                this.httpserver.close();
             } catch (InterruptedException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
             
             this.httpserver_th = null;
+            this.httpserver = null;
             this.started = false;
+            
+            try {
+				Thread.sleep(800);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             
             log.info("Servicio HTTP parado.");
 		}
