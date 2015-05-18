@@ -38,7 +38,7 @@ public abstract class DocumentController extends HTTPRequestHandler {
 	public HTTPResponse get(HTTPRequest req) {
 		if (req.getResourceParameters().containsKey("uuid")) {
 			UUID id = UUID.fromString(req.getResourceParameters().get("uuid"));
-			return this.getDocument(id);
+			return this.getDocument(req, id);
 		}
 		else {
 			return this.getList();
@@ -96,51 +96,20 @@ public abstract class DocumentController extends HTTPRequestHandler {
 		}
 	}
 	
-	private HTTPResponse getDocument(UUID id) {
+	protected HTTPResponse getDocument(HTTPRequest req, UUID id) {
 		DocumentDAO dao = new DocumentDAO(this.db);
 		
 		try {
 			DocumentBean doc = dao.get(this.type, id);
 			
 			if (doc != null) {
-				HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
-				res.setContent(doc.getContent());
-				
-				switch(doc.getInfo().getType()) {
-				case XSD:
-				case XSLT:
-				case XML:
-					res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.XML.getMime());
-					break;
-				case HTML:
-				default:
-					res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.HTML.getMime());
-					break;
-				}
-				
-				return res;
+				return this.getDocumentResponse(doc);
 			}
 			else {
 				Entry <String, DocumentBean> ret = this.jwsclient.get(this.type, id);
 				
 				if (ret != null) {
-					DocumentBean docr = ret.getValue();
-					HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
-					res.setContent(docr.getContent());
-					
-					switch(docr.getInfo().getType()) {
-					case XSD:
-					case XSLT:
-					case XML:
-						res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.XML.getMime());
-						break;
-					case HTML:
-					default:
-						res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.HTML.getMime());
-						break;
-					}
-					
-					return res;
+					return this.getDocumentResponse(ret.getValue());
 				}
 				else {
 					return new HTTPResponse(HTTPResponseStatus.S404);
@@ -150,6 +119,25 @@ public abstract class DocumentController extends HTTPRequestHandler {
 			log.log(Level.WARNING, "Error manejando una peticion. {0}", e.getMessage());
 			return new HTTPResponse(HTTPResponseStatus.S500); // 503?
 		}
+	}
+	
+	protected HTTPResponse getDocumentResponse(DocumentBean doc) {
+		HTTPResponse res = new HTTPResponse(HTTPResponseStatus.S200);
+		res.setContent(doc.getContent());
+		
+		switch(doc.getInfo().getType()) {
+		case XSD:
+		case XSLT:
+		case XML:
+			res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.XML.getMime());
+			break;
+		case HTML:
+		default:
+			res.putParameter(HTTPHeaders.CONTENT_TYPE.getHeader(), MIME.HTML.getMime());
+			break;
+		}
+		
+		return res;
 	}
 
 	@Override
