@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -156,4 +159,29 @@ public class DocumentBean implements Serializable {
         
         return doc;
     }
+
+	public static DocumentBean applyXslt(DocumentBean docxml, DocumentBean docxslt) {
+		DocumentBean doctoret = new DocumentBean();
+		doctoret.getInfo().setType(DocumentBeanType.HTML);
+		
+		try {
+	        TransformerFactory tFactory = TransformerFactory.newInstance();
+
+            Source xmlsrc = new StreamSource(new java.io.StringReader(docxml.getContent()));
+            Source xsltsrc = new StreamSource(new java.io.StringReader(docxslt.getContent()));
+
+            StringWriter sw = new StringWriter();
+	        Transformer trasform = tFactory.newTransformer(xsltsrc);
+	        trasform.transform(xmlsrc, new StreamResult(sw));
+	        
+	        doctoret.setContent(sw.toString());
+	        
+	        return doctoret;
+	    }
+	    catch (Exception e) 
+	    {
+            log.log(Level.WARNING, "Error al convertir un XML usando una plantilla XSLT.", e);
+	        return null;
+	    }
+	}
 }
