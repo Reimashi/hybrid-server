@@ -52,7 +52,14 @@ public class XmlController extends DocumentController {
 		// Obtenemos el archivo XSLT si es necesario
 		if (req.getResourceParameters().containsKey("xslt")) {
 			DocumentBean docxslt = null;
-			UUID xsltid = UUID.fromString(req.getResourceParameters().get("xslt"));
+			UUID xsltid = null;
+			
+			try {
+				xsltid = UUID.fromString(req.getResourceParameters().get("xslt"));
+			}
+			catch (IllegalArgumentException e) {
+				return new HTTPResponse(HTTPResponseStatus.S400);
+			}
 			
 			try {
 				docxslt = dao.get(DocumentBeanType.XSLT, xsltid);

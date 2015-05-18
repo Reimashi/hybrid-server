@@ -37,7 +37,15 @@ public abstract class DocumentController extends HTTPRequestHandler {
 	@Override
 	public HTTPResponse get(HTTPRequest req) {
 		if (req.getResourceParameters().containsKey("uuid")) {
-			UUID id = UUID.fromString(req.getResourceParameters().get("uuid"));
+			UUID id = null;
+			
+			try {
+				id = UUID.fromString(req.getResourceParameters().get("uuid"));
+			}
+			catch (IllegalArgumentException e) {
+				return new HTTPResponse(HTTPResponseStatus.S400);
+			}
+			
 			return this.getDocument(req, id);
 		}
 		else {
@@ -189,7 +197,14 @@ public abstract class DocumentController extends HTTPRequestHandler {
 	public HTTPResponse delete(HTTPRequest req) {
 		if (req.getResourceParameters().containsKey("uuid")) {
 			DocumentDAO dao = new DocumentDAO(this.db);
-			UUID id = UUID.fromString(req.getResourceParameters().get("uuid"));
+			UUID id = null;
+			
+			try {
+				id = UUID.fromString(req.getResourceParameters().get("uuid"));
+			}
+			catch (IllegalArgumentException e) {
+				return new HTTPResponse(HTTPResponseStatus.S400);
+			}
 			
 			try {
 				dao.delete(this.type, id);
