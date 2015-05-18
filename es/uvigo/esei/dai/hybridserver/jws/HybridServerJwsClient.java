@@ -3,9 +3,11 @@ package es.uvigo.esei.dai.hybridserver.jws;
 import es.uvigo.esei.dai.hybridserver.Configuration;
 import es.uvigo.esei.dai.hybridserver.HybridServerService;
 import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
+import es.uvigo.esei.dai.hybridserver.dao.DocumentDAO;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBean;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBeanInfo;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBeanType;
+import es.uvigo.esei.dai.hybridserver.services.DBService;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
@@ -13,6 +15,7 @@ import javax.xml.ws.WebServiceException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,11 +28,13 @@ import java.util.logging.Logger;
 
 public class HybridServerJwsClient {
     private static final Logger log = Logger.getLogger(HybridServerJwsClient.class.getName());
-    
-    private Configuration configuration;
 
-    public HybridServerJwsClient(Configuration conf) {
+    private Configuration configuration;
+    private DBService dbservice;
+
+    public HybridServerJwsClient(Configuration conf, DBService db) {
         this.configuration = conf;
+        this.dbservice = db;
     }
 
     public Map<String, HybridServerService> getServices() {
@@ -62,11 +67,26 @@ public class HybridServerJwsClient {
 			DocumentBean document = service.get(type, id);
 
 			if (document != null) { 
+				this.saveDocumentLocal(document);
 				return new AbstractMap.SimpleEntry<>(servername, document);
 			}
 		}
 
 		return null;
+	}
+	
+	private void saveDocumentLocal(DocumentBean doc) {
+		DocumentDAO dao = new DocumentDAO(this.dbservice);
+		
+		try {
+			DocumentBean docloc = dao.get(doc.getInfo().getType(), doc.getInfo().getID());
+			
+			if (docloc == null) {
+				dao.add(doc.getInfo().getType(), doc);
+			}
+		} catch (SQLException e) {
+			log.log(Level.WARNING, "Remote document {0} can't be saved in local.", doc.getInfo().getID().toString());
+		}
 	}
 
 	public Map<String, Boolean> delete(DocumentBeanType type, UUID id) {

@@ -26,7 +26,7 @@ public class HTTPService {
 		this.config = conf;
 		this.database = dbs;
 		
-		this.jwsclient = new HybridServerJwsClient(conf);
+		this.jwsclient = new HybridServerJwsClient(conf, dbs);
 		
 		this.httpserver = new HTTPServer(conf.getHttpPort(), conf.getNumClients());
         this.httpserver.setServerName("HybridServer/0.2");
