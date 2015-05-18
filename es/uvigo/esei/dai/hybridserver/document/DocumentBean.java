@@ -62,7 +62,9 @@ public class DocumentBean implements Serializable {
 	 * @return Estado de la validación
 	 */
 	public static boolean validateXml (DocumentBean xml, DocumentBean xsd) {
-		if (xml.getInfo().getType() == DocumentBeanType.XML && xsd.getInfo().getType() == DocumentBeanType.XSD) {
+		if ((xml.getInfo().getType() == DocumentBeanType.XML || 
+				xml.getInfo().getType() == DocumentBeanType.XSLT) && 
+				xsd.getInfo().getType() == DocumentBeanType.XSD) {
             try {
                 Source xsdsrc = new StreamSource(new java.io.StringReader(xsd.getContent()));
                 Source xmlsrc = new StreamSource(new java.io.StringReader(xml.getContent()));
