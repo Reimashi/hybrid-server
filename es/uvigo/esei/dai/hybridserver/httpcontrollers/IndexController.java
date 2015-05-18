@@ -8,6 +8,8 @@ import es.uvigo.esei.dai.hybridserver.jws.HybridServerJwsClient;
 import es.uvigo.esei.dai.hybridserver.services.DBService;
 
 public class IndexController extends HTTPRequestHandler {
+	protected final static String Html_Encoding_Meta = "<meta charset=\"UTF-8\">";
+	
 	public IndexController(DBService db, HybridServerJwsClient jwsclient) {
 		super(db, jwsclient);
 	}
@@ -21,6 +23,7 @@ public class IndexController extends HTTPRequestHandler {
 		html.append("<html>");
 		
 		html.append("<head>"
+				+ Html_Encoding_Meta
 				+ "<title>Hybrid Server - Inicio</title>"
 				+ "</head>");
 		
