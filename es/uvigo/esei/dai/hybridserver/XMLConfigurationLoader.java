@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class XMLConfigurationLoader {
-	private final static String XSD_CONFIG_PATH = "configuracion.xsd";
+	private final static String XSD_CONFIG_PATH = "configuration.xsd";
     /**
      * @param f The file to load and parse
      * @return A Configuration object containing the values of the xml
