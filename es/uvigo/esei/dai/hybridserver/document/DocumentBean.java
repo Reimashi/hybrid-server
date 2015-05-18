@@ -34,7 +34,7 @@ public class DocumentBean implements Serializable {
 	private final static Logger log = Logger.getLogger(DocumentBean.class.getName());
 
     @XmlElement(name = "info", required = true)
-	private DocumentBeanInfo info;
+	private DocumentBeanInfo info = new DocumentBeanInfo();
 	
 	public DocumentBeanInfo getInfo() {
 		return this.info;
@@ -45,7 +45,7 @@ public class DocumentBean implements Serializable {
 	}
 
     @XmlElement(name = "content", required = true)
-	private String content;
+	private String content = "";
 	
 	public String getContent() {
 		return this.content;

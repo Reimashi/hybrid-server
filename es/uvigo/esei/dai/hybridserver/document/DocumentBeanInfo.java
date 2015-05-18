@@ -22,7 +22,7 @@ public class DocumentBeanInfo implements Serializable {
 	private static final long serialVersionUID = -5225478590252872738L;
 
     @XmlElement(name = "type", required = true)
-	private DocumentBeanType type;
+	private DocumentBeanType type = DocumentBeanType.UNDEFINED;
 	
 	public DocumentBeanType getType() {
 		return this.type;
@@ -33,7 +33,7 @@ public class DocumentBeanInfo implements Serializable {
 	}
 
     @XmlElement(name = "id", required = true)
-	private UUID id;
+	private UUID id = UUID.randomUUID();
 	
 	public UUID getID() {
 		return this.id;
@@ -44,7 +44,7 @@ public class DocumentBeanInfo implements Serializable {
 	}
 
     @XmlElement(name = "info", required = false)
-	private UUID xsd;
+	private UUID xsd = null;
 	
 	public UUID getXsd() {
 		return this.xsd;
