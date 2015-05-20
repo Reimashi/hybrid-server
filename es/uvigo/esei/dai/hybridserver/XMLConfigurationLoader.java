@@ -22,9 +22,8 @@ public class XMLConfigurationLoader {
      * @param f The file to load and parse
      * @return A Configuration object containing the values of the xml
      */
-    Configuration configuracion = new Configuration();
-
     public Configuration load (File f) throws Exception {
+        Configuration configuracion = new Configuration();
     	DocumentBean xml = DocumentBean.FromFile(f);
     	DocumentBean xsd = DocumentBean.FromFile(XSD_CONFIG_PATH);
     	
@@ -36,27 +35,27 @@ public class XMLConfigurationLoader {
             XPath xPath =  XPathFactory.newInstance().newXPath();
 
             String expression = "/configuration/connections/http";
-            this.configuracion.setHttpPort(Integer.parseInt(
+            configuracion.setHttpPort(Integer.parseInt(
             		xPath.compile(expression).evaluate(xmldoc)));
             
             expression = "/configuration/connections/webservice";
-            this.configuracion.setWebServiceURL(
+            configuracion.setWebServiceURL(
             		xPath.compile(expression).evaluate(xmldoc));
 
             expression = "/configuration/connections/numClients";
-            this.configuracion.setNumClients(Integer.parseInt(
+            configuracion.setNumClients(Integer.parseInt(
             		xPath.compile(expression).evaluate(xmldoc)));
             
             expression = "/configuration/database/user";
-            this.configuracion.setDbUser(
+            configuracion.setDbUser(
             		xPath.compile(expression).evaluate(xmldoc));
             
             expression = "/configuration/database/password";
-            this.configuracion.setDbPassword(
+            configuracion.setDbPassword(
             		xPath.compile(expression).evaluate(xmldoc));
             
             expression = "/configuration/database/url";
-            this.configuracion.setDbURL(
+            configuracion.setDbURL(
             		xPath.compile(expression).evaluate(xmldoc));
             
             ArrayList<ServerConfiguration> jwsservers = new ArrayList<>();
@@ -73,16 +72,12 @@ public class XMLConfigurationLoader {
                 		);
                 jwsservers.add(sconf);
             }
-            this.configuracion.setServers(jwsservers);
+            configuracion.setServers(jwsservers);
 
-            return this.configuracion;
+            return configuracion;
     	}
     	else {
     		throw new Exception("El archivo de configuración XML no tiene el formato correcto");
     	}
-    }
-    
-    public int getHttpPort() {
-        return configuracion.getHttpPort();
     }
 }
