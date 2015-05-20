@@ -14,12 +14,12 @@ public class Configuration {
     private ArrayList<ServerConfiguration> LServers;
 
     public Configuration() {
-        this.LPort = 80;
+        this.LPort = 8888;
         this.LNumUsers = 50;
         this.LwsUrl = "http://localhost:20001/hybridserver";
         this.LdbUser = "dai";
         this.LdbPassword = "daipassword";
-        this.LdbUrl = "jdbc:mysql://localhost/hybridserverdb";
+        this.LdbUrl = "jdbc:mysql://localhost/hstestdb";
         this.LServers = new ArrayList<ServerConfiguration>();
     }
 
