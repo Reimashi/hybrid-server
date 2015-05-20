@@ -1,7 +1,6 @@
 package es.uvigo.esei.dai.hybridserver.jws;
 
 import es.uvigo.esei.dai.hybridserver.Configuration;
-import es.uvigo.esei.dai.hybridserver.HybridServerService;
 import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
 import es.uvigo.esei.dai.hybridserver.dao.DocumentDAO;
 import es.uvigo.esei.dai.hybridserver.document.DocumentBean;
@@ -37,16 +36,16 @@ public class HybridServerJwsClient {
         this.dbservice = db;
     }
 
-    public Map<String, HybridServerService> getServices() {
+    public Map<String, IDocumentJwsService> getServices() {
         
-    	Map<String, HybridServerService> services = new HashMap<>();
+    	Map<String, IDocumentJwsService> services = new HashMap<>();
 
         for (ServerConfiguration co : this.configuration.getServers()) {
             try {
                 QName name = new QName(co.getNamespace(), co.getService());
                 Service service = Service.create(new URL(co.getHttpAddress()), name);
                 
-                HybridServerService serv = service.getPort(HybridServerService.class);
+                IDocumentJwsService serv = service.getPort(IDocumentJwsService.class);
                 
                 services.put(co.getName(), serv);
             } catch (MalformedURLException e) {
@@ -61,9 +60,9 @@ public class HybridServerJwsClient {
     }
 
 	public Entry<String, DocumentBean> get(DocumentBeanType type, UUID id) {
-    	Map<String, HybridServerService> services = this.getServices();
+    	Map<String, IDocumentJwsService> services = this.getServices();
 		for (String servername : services.keySet()) {
-			HybridServerService service = services.get(servername);
+			IDocumentJwsService service = services.get(servername);
 			DocumentBean document = service.get(type, id);
 
 			if (document != null) { 
@@ -90,11 +89,11 @@ public class HybridServerJwsClient {
 	}
 
 	public Map<String, Boolean> delete(DocumentBeanType type, UUID id) {
-    	Map<String, HybridServerService> services = this.getServices();
+    	Map<String, IDocumentJwsService> services = this.getServices();
 		Map<String, Boolean> toret = new HashMap<String,Boolean>();
 
 		for (String servername : services.keySet()) {
-			HybridServerService service = services.get(servername);
+			IDocumentJwsService service = services.get(servername);
 			toret.put(servername, service.delete(type, id));
 		}
 		
@@ -102,11 +101,11 @@ public class HybridServerJwsClient {
 	}
 
 	public Map<String, List<DocumentBeanInfo>> list(DocumentBeanType type) {
-    	Map<String, HybridServerService> services = this.getServices();
+    	Map<String, IDocumentJwsService> services = this.getServices();
 		Map<String, List<DocumentBeanInfo>> toret = new HashMap<>();
 
 		for (String servername : services.keySet()) {
-			HybridServerService service = services.get(servername);
+			IDocumentJwsService service = services.get(servername);
 			toret.put(servername, service.list(type));
 		}
 		
@@ -114,11 +113,11 @@ public class HybridServerJwsClient {
 	}
 
 	public Map<String, Integer> count(DocumentBeanType type) {
-    	Map<String, HybridServerService> services = this.getServices();
+    	Map<String, IDocumentJwsService> services = this.getServices();
 		Map<String, Integer> toret = new HashMap<>();
 
 		for (String servername : services.keySet()) {
-			HybridServerService service = services.get(servername);
+			IDocumentJwsService service = services.get(servername);
 			toret.put(servername, service.count(type));
 		}
 		
