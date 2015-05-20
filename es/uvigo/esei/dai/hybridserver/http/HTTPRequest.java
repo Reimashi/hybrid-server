@@ -147,30 +147,34 @@ public class HTTPRequest {
             }
             
             // Parseamos los parámetros de POST
+            MIME mtype = MIME.FORM;
             if (this.rp_headerparameters.containsKey(CONTENT_TYPE.getHeader())) {
                 String ctype = this.rp_headerparameters.get(CONTENT_TYPE.getHeader());
                 
             	try {
-	                MIME mtype = MIME.fromString(ctype);
-	                
-	                if (MIME.FORM == mtype && this.rp_content.length() > 0) {
-	                	if (this.rp_headerparameters.containsKey(HTTPHeaders.CONTENT_ENCODING.getHeader())) {
-	                		String cencoding = this.rp_headerparameters.get(HTTPHeaders.CONTENT_ENCODING.getHeader());
-	                		this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content, cencoding));
-	                    } 
-	                	else {
-	                        this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content));
-	                    }
-	                }
-	                else {
-	                    throw new HTTPParseException("Linea " + line + 
-	                    		": Error al decodificar un formulario POST.");
+	                MIME msype = MIME.fromString(ctype);
+	                if (msype != null) {
+	                	mtype = msype;
 	                }
             	}
                 catch (IllegalArgumentException e) {
                     throw new HTTPParseException("Linea " + line + 
                     		": Tipo MIME desconocido " + ctype + ".");
                 }
+            }
+	                
+            if (MIME.FORM == mtype && this.rp_content.length() > 0) {
+            	if (this.rp_headerparameters.containsKey(HTTPHeaders.CONTENT_ENCODING.getHeader())) {
+            		String cencoding = this.rp_headerparameters.get(HTTPHeaders.CONTENT_ENCODING.getHeader());
+            		this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content, cencoding));
+                } 
+            	else {
+                    this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content));
+                }
+            }
+            else {
+                throw new HTTPParseException("Linea " + line + 
+                		": Error al decodificar un formulario POST.");
             }
         }
         catch (NullPointerException ex) {
