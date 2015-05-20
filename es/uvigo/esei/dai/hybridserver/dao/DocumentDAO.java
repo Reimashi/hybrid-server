@@ -73,13 +73,15 @@ public class DocumentDAO {
     }
 
     public boolean delete(DocumentBeanType type, UUID id) throws SQLException {
+    	int affectedrows = 0;
+    	
     	// Borramos el documento
         try (PreparedStatement cons = this.db.getConnection().
                 prepareStatement("DELETE FROM " + type.getName() + " WHERE uuid = ? ")) {
 
             cons.setString(1, id.toString());
 
-            cons.executeUpdate();
+            affectedrows = cons.executeUpdate();
         }
         
         // Si es un documento XSD, borramos los XSLT asociados
@@ -96,7 +98,7 @@ public class DocumentDAO {
 			// El borrado es opcional, si falla no pasa nada.
 		}
         
-        return true;
+        return affectedrows == 0 ? false : true;
     }
 
     public List<DocumentBeanInfo> getList(DocumentBeanType type) throws SQLException {
