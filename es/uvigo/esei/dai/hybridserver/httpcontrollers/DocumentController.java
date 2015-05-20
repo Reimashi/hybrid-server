@@ -207,16 +207,21 @@ public abstract class DocumentController extends HTTPRequestHandler {
 			}
 			
 			try {
-				dao.delete(this.type, id);
+				boolean borrado = dao.delete(this.type, id);
 				this.jwsclient.delete(this.type, id);
 				
-				return new HTTPResponse(HTTPResponseStatus.S200);
+				if (borrado) {
+					return new HTTPResponse(HTTPResponseStatus.S200);
+				}
+				else {
+					return new HTTPResponse(HTTPResponseStatus.S404);
+				}
 			} catch (SQLException e) {
 				return new HTTPResponse(HTTPResponseStatus.S500);
 			}
 		}
 		else {
-			return new HTTPResponse(HTTPResponseStatus.S404);
+			return new HTTPResponse(HTTPResponseStatus.S400);
 		}
 	}
 	

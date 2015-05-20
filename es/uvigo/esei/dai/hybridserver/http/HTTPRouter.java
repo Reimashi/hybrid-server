@@ -64,6 +64,6 @@ public class HTTPRouter {
         	return new HTTPResponse(HTTPResponseStatus.S500);
         }
         
-        return new HTTPResponse(HTTPResponseStatus.S404);
+        return new HTTPResponse(HTTPResponseStatus.S400);
     }
 }
