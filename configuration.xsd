@@ -1,4 +1,8 @@
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.esei.uvigo.es/dai/proyecto" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema 
+	attributeFormDefault="unqualified" 
+	elementFormDefault="qualified" 
+	targetNamespace="http://www.esei.uvigo.es/dai/hybridserver" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="configuration">
     <xs:complexType>
       <xs:sequence>
