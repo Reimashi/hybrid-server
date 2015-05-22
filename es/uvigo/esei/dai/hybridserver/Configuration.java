@@ -16,7 +16,7 @@ public class Configuration {
     public Configuration() {
         this.LPort = 8888;
         this.LNumUsers = 50;
-        this.LwsUrl = "http://localhost:20001/hybridserver";
+        this.LwsUrl = "";
         this.LdbUser = "dai";
         this.LdbPassword = "daipassword";
         this.LdbUrl = "jdbc:mysql://localhost/hstestdb";

@@ -30,7 +30,7 @@ public class JWSService {
      * Inicia el servicio JWS
      */
     public void start() {
-    	if (this.htmlep == null) {
+    	if (this.htmlep == null && this.config.getWebServiceURL().length() > 0) {
     		this.htmlep = Endpoint.publish(
     				this.config.getWebServiceURL(), 
     				new HybridServerService(this.database)
