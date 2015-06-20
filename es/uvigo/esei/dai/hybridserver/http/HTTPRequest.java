@@ -148,6 +148,7 @@ public class HTTPRequest {
             
             // Parseamos los parámetros de POST
             MIME mtype = MIME.FORM;
+            boolean defaultmtype = true;
             if (this.rp_headerparameters.containsKey(CONTENT_TYPE.getHeader())) {
                 String ctype = this.rp_headerparameters.get(CONTENT_TYPE.getHeader());
                 
@@ -155,6 +156,7 @@ public class HTTPRequest {
 	                MIME msype = MIME.fromString(ctype);
 	                if (msype != null) {
 	                	mtype = msype;
+	                	defaultmtype = false;
 	                }
             	}
                 catch (IllegalArgumentException e) {
@@ -162,7 +164,7 @@ public class HTTPRequest {
                     		": Tipo MIME desconocido " + ctype + ".");
                 }
             }
-	                
+
             if (MIME.FORM == mtype && this.rp_content.length() > 0) {
             	if (this.rp_headerparameters.containsKey(HTTPHeaders.CONTENT_ENCODING.getHeader())) {
             		String cencoding = this.rp_headerparameters.get(HTTPHeaders.CONTENT_ENCODING.getHeader());
@@ -172,7 +174,7 @@ public class HTTPRequest {
                     this.rp_resourceparameters.putAll(HTTPRequest.parseForm(this.rp_content));
                 }
             }
-            else {
+            else if (!defaultmtype) {
                 throw new HTTPParseException("Linea " + line + 
                 		": Error al decodificar un formulario POST.");
             }
