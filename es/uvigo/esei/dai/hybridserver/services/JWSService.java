@@ -20,22 +20,25 @@ public class JWSService {
     private final DBService database;
 
     private Endpoint htmlep;
+    
+    public final String url;
 
     public JWSService(Configuration conf, DBService db) {
         this.config = conf;
         this.database = db;
+        this.url = this.config.getWebServiceURL() != null ? this.config.getWebServiceURL() : "";
     }
 
     /**
      * Inicia el servicio JWS
      */
     public void start() {
-    	if (this.htmlep == null && this.config.getWebServiceURL().length() > 0) {
+    	if (this.htmlep == null && this.url.length() > 0) {
     		this.htmlep = Endpoint.publish(
-    				this.config.getWebServiceURL(), 
+    				this.url, 
     				new HybridServerService(this.database)
     			);
-    		log.log(Level.INFO, "Servidor JWS iniciado. <" + this.config.getWebServiceURL() + ">");
+    		log.log(Level.INFO, "Servidor JWS iniciado. <" + this.url + ">");
     	}
     }
 
