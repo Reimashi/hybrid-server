@@ -83,11 +83,12 @@ public class HTTPService {
             this.httpserver = null;
             this.started = false;
             
+            // Para evitar que los test multiples fallen ya que el Sistema Operativo
+            // no es capaz de eliminar el socket antes de que la siguiente instancia
+            // del programa lo intente abrir de nuevo.
             try {
-				Thread.sleep(800);
+				Thread.sleep(300);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
             
             log.info("Servicio HTTP parado.");
