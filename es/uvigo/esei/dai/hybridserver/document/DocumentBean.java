@@ -83,14 +83,14 @@ public class DocumentBean implements Serializable {
 	                    return true;
 	                }
 	                catch(SAXException e) {
-	                    log.log(Level.WARNING, "Error while parse an XML document.", e);
+	                    log.log(Level.WARNING, "Error while parse an XML document.");
 	                }
                 }
                 catch(SAXException e) {
-                    log.log(Level.WARNING, "Error while parse an XSD document.", e);
+                    log.log(Level.WARNING, "Error while parse an XSD document.");
                 }
             } catch (IOException e) {
-                log.log(Level.WARNING, "Error while parse an XML document with a XSD document.", e);
+                log.log(Level.WARNING, "Error while parse an XML document with a XSD document.");
             }
         }
 		
