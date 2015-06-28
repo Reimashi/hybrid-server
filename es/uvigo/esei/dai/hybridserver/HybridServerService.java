@@ -16,7 +16,9 @@ import es.uvigo.esei.dai.hybridserver.jws.IDocumentJwsService;
 import es.uvigo.esei.dai.hybridserver.services.DBService;
 
 @WebService(
-	endpointInterface = "es.uvigo.esei.dai.hybridserver.HybridServerService"
+    serviceName = "HybridServerService",
+    targetNamespace = "http://hybridserver.dai.esei.uvigo.es/",
+	endpointInterface = "es.uvigo.esei.dai.hybridserver.jws.IDocumentJwsService"
 )
 public class HybridServerService implements IDocumentJwsService {
 	private final DocumentDAO dao;
