@@ -43,7 +43,7 @@ public class HybridServerJwsClient {
         for (ServerConfiguration co : this.configuration.getServers()) {
             try {
                 QName name = new QName(co.getNamespace(), co.getService());
-                Service service = Service.create(new URL(co.getHttpAddress()), name);
+                Service service = Service.create(new URL(co.getWsdl()), name);
                 
                 IDocumentJwsService serv = service.getPort(IDocumentJwsService.class);
                 
