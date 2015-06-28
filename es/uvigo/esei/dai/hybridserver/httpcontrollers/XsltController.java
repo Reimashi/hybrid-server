@@ -2,6 +2,7 @@ package es.uvigo.esei.dai.hybridserver.httpcontrollers;
 
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +28,7 @@ public class XsltController extends DocumentController {
 	@Override
 	public HTTPResponse post(HTTPRequest req) {
 		if (req.getResourceParameters().containsKey(this.type.getName().toLowerCase()) &&
-				req.getResourceParameters().containsKey("xsd")) {
+				req.getResourceParameters().containsKey(DocumentBeanType.XSD.getName().toLowerCase())) {
 			DocumentDAO dao = new DocumentDAO(this.db);
 			UUID xsdid = null;
 			
@@ -41,14 +42,33 @@ public class XsltController extends DocumentController {
 			DocumentBeanInfo documentInfo = new DocumentBeanInfo();
 			documentInfo.setType(this.type);
 			documentInfo.setID(UUID.randomUUID());
-			documentInfo.setID(xsdid);
+			documentInfo.setXsd(xsdid);
 			
 			DocumentBean document = new DocumentBean();
 			document.setContent(req.getResourceParameters().get(this.type.getName().toLowerCase()));
 			document.setInfo(documentInfo);
 			
+			DocumentBean xsddocument = null;
+			
 			try {
-				dao.add(document.getInfo().getType(), document);
+				xsddocument = dao.get(DocumentBeanType.XSD, xsdid);
+				
+				if (xsddocument == null) {
+					Entry <String, DocumentBean> ret = this.jwsclient.get(DocumentBeanType.XSD, xsdid);
+					
+					if (ret == null) {
+						log.log(Level.WARNING, "Error insertando un XSLT con un XSD inexistente.");
+						return new HTTPResponse(HTTPResponseStatus.S404);
+					}
+				}
+			}
+			catch (SQLException e) {
+				log.log(Level.WARNING, "Error insertando un XSLT con un XSD inexistente. {0}", e.getMessage());
+				return new HTTPResponse(HTTPResponseStatus.S404); // 503?
+			}
+			
+			try {
+				dao.add(DocumentBeanType.XSLT, document);
 				
 				StringBuilder html = new StringBuilder();
 
@@ -60,7 +80,7 @@ public class XsltController extends DocumentController {
 						+ "</head>");
 				
 				html.append("<body>"
-						+ "<p>Se ha registrado un nuevo documento: <a href=\"/" + this.type.getName().toLowerCase() + "?uuid=" + document.getInfo().getID().toString() + "\">" + document.getInfo().getID().toString() + "</a></p>"
+						+ "<p>Se ha registrado un nuevo documento: <a href=\"" + this.type.getName().toLowerCase() + "?uuid=" + document.getInfo().getID().toString() + "\">" + document.getInfo().getID().toString() + "</a></p>"
 						+ "<p><a href=\"/" + this.type.getName().toLowerCase() + "\">Volver</a></p>"
 						+ "</body>");
 				
