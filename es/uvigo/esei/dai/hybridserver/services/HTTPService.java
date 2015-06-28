@@ -87,7 +87,7 @@ public class HTTPService {
             // no es capaz de eliminar el socket antes de que la siguiente instancia
             // del programa lo intente abrir de nuevo.
             try {
-				Thread.sleep(300);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 			}
             
