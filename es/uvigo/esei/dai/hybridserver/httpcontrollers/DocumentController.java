@@ -174,7 +174,7 @@ public abstract class DocumentController extends HTTPRequestHandler {
 						+ "</head>");
 				
 				html.append("<body>"
-						+ "<p>Se ha registrado un nuevo documento: <a href=\"/" + this.type.getName().toLowerCase() + "?uuid=" + document.getInfo().getID().toString() + "\">" + document.getInfo().getID().toString() + "</a></p>"
+						+ "<p>Se ha registrado un nuevo documento: <a href=\"" + this.type.getName().toLowerCase() + "?uuid=" + document.getInfo().getID().toString() + "\">" + document.getInfo().getID().toString() + "</a></p>"
 						+ "<p><a href=\"/" + this.type.getName().toLowerCase() + "\">Volver</a></p>"
 						+ "</body>");
 				
