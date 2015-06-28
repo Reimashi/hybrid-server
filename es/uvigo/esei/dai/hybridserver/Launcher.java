@@ -126,7 +126,7 @@ public class Launcher {
 	            		Launcher.commandHelp();
 	            	}
 	            	else if (command.matches("config")) {
-	            		System.out.println(daemon.getConfiguration());
+	            		System.out.println(daemon.getConfiguration().toString());
 	            	}
 	            	else if (command.matches("stop")) {
 	            		daemon.stop();
