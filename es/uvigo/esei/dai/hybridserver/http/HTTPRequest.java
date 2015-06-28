@@ -151,6 +151,10 @@ public class HTTPRequest {
             boolean defaultmtype = true;
             if (this.rp_headerparameters.containsKey(CONTENT_TYPE.getHeader())) {
                 String ctype = this.rp_headerparameters.get(CONTENT_TYPE.getHeader());
+                if (ctype.contains(";"))
+                {
+                	ctype = ctype.substring(0, ctype.indexOf(";"));
+                }
                 
             	try {
 	                MIME msype = MIME.fromString(ctype);
